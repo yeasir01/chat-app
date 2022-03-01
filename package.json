@@ -1,0 +1,21 @@
+{
+  "name": "chatter",
+  "version": "1.0.0",
+  "description": "chat application",
+  "main": "index.js",
+  "scripts": {
+    "dev": "echo \"Error: no test specified\" && exit 1",
+    "api": "cd api-server && npm run dev",
+    "client": "cd client && npm start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yeasir01/chatter.git"
+  },
+  "author": "Yeasir Hugais",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yeasir01/chatter/issues"
+  },
+  "homepage": "https://github.com/yeasir01/chatter#readme"
+}
