@@ -4,15 +4,26 @@ import "dotenv/config";
 import express from "express";
 import compression from "compression";
 import helmet from "helmet";
-import config from "./config/index.js";
-import authRoute from  "./routes/v1/auth-route.js";
+import config from "./config/env.js";
+import authRoutes from "./api/v1/auth.js";
+import { db } from "./config/database.js";
 
-const APP = express();
-const PORT = config.port || 5000;
+const app = express();
 
-APP.use(compression());
-APP.use(helmet());
+app.use(compression());
+app.use(helmet());
+app.use(express.json());
 
-APP.use("/api/auth", authRoute);
+app.use("/v1/auth", authRoutes);
 
-APP.listen(PORT, () => console.log("API Server listening on ", PORT));
+const startServer = async () => {
+  try {
+    await db.sync({force: true});
+    await db.authenticate();
+    app.listen(config.port, ()=> console.log("Connected and listening"));
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+startServer();
