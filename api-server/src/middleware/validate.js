@@ -1,10 +1,25 @@
-export const validate = (schema, reqType="body") => {
+"use strict";
+
+import schemaList from "../validation/schema.js";
+
+export const validate = (schemaName = "", params=false) => {
     return async (req, res, next) => {
         try {
-            await schema.validateAsync(req[reqType]);
+            const schema = schemaList[schemaName];
+            const reqType = req[params ? "params" : "body"];
+            await schema.validateAsync(reqType, { abortEarly: false });
             next();
         } catch (err) {
-            return res.status(422).json(err?.details);
+            if (err.details) {
+                const errors = err.details.map(e => {
+                    return {
+                        message: e.message, 
+                        key: e.context.key
+                    };
+                });
+                return res.status(422).json(errors);
+            }
+            return res.status(422).json(err);
         }
     };
 };

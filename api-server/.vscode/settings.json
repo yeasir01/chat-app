@@ -1,8 +1,10 @@
 {
     "cSpell.words": [
+        "hstore",
         "PGDATABASE",
         "PGHOST",
         "PGPASSWORD",
-        "PGUSER"
+        "PGUSER",
+        "resave"
     ]
 }

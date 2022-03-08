@@ -1,36 +1,65 @@
-import config from "../config/env.js";
-import bcrypt from "bcrypt";
+"use strict";
+
 import User from "../model/User.js";
 import { Sequelize } from "sequelize";
 
-export const register = async (req, res) => {
+export const register = async (req, res, next) => {
     try {
-        const { firstName, lastName, email, password, handle } = req.body;
-    
+        const { email, handle } = req.body;
+        
         const user = await User.findOne({
-            where: Sequelize.or({ handle }, { email }),
+            where: Sequelize.or({ handle }, { email })
         });
-    
-        if (user) {
-            return res.send("That user already is here");
+
+        let errors = [];
+        
+        if (!user) {
+            const new_record = await User.create(req.body);
+            return res.status(200).json({message: "Welcome! activate account to login", user: new_record});
         }
         
-        const hash = await bcrypt.hash(password, config.saltRounds);
-    
-        const new_record = await User.create({
-            first_name: firstName,
-            last_name: lastName,
-            email: email,
-            hash: hash,
-            handle: handle,
-        });
-    
-        res.send(new_record);
-    } catch (error) {
-        res.send(error);
+        if (user.handle === handle) {
+            errors.push({ message: "That handle is already in use", key: "handle" });
+        }
+        
+        if (user.email === email) {
+            errors.push({ message: "That email is already in use.", key: "email" });
+        }
+        
+        res.status(422).json(errors);
+        
+    } catch (err) {
+        next(err);
     }
 };
 
-export const login = async (req, res) => {
-    console.log("hello World");
+export const login = (req, res, next) => {
+    try {
+        res.status(200).send(`Welcome ${req.user.firstName}`);
+    } catch (err) {
+        next(err);
+    }
+};
+
+export const updateProfile = async (req, res, next) => {
+    try {
+        const user = await User.update(req.body ,{
+            where: { id: req.user.id }, 
+            returning: true
+        });
+        
+        res.send(user[1]);
+
+    } catch (err) {
+        next(err);
+    }
+};
+
+export const logout = (req, res, next) => {
+    try {
+        req.logout();
+        res.status(200).clearCookie("connect.sid").end();
+    } catch (err) {
+        next(err);
+    }
 };

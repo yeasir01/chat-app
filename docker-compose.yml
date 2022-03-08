@@ -1,0 +1,52 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:14-bullseye
+    restart: always
+    environment:
+      - PGHOST=${PGHOST}
+      - PGUSER=${PGUSER}
+      - PGPASSWORD=${PGPASSWORD}
+      - PGDATABASE=${PGDATABASE}
+      - PGPORT=5432
+    ports:
+      - 5432:5432
+    networks:
+      - api-network
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+  redis:
+    image: redis:7.0-rc-bullseye
+    restart: always
+    networks:
+      - api-network
+  api:
+    container_name: api-server
+    restart: always
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - HOSTNAME=${HOSTNAME}
+      - PORT=${PORT}
+      - SALT_ROUNDS=${SALT_ROUNDS}
+    depends_on:
+      - db
+      - redis
+    build:
+      context: ./api-server
+      dockerfile: dockerfile
+    ports:
+      - 5050:5050
+    networks:
+      - api-network
+  client:
+    container_name: react-client
+    restart: always
+    depends_on:
+      - api
+    build:
+      context: ./client
+      dockerfile: dockerfile
+networks:
+  api-network:
+    driver: bridge
