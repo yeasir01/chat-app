@@ -4,7 +4,7 @@ import "dotenv/config";
 import express from "express";
 import compression from "compression";
 import helmet from "helmet";
-import config from "./config/env.js";
+import config from "./config/environment.js";
 import authRoutes from "./routes/auth.js";
 import errorHandler from "./middleware/error-handler.js";
 import { db } from "./config/database.js";

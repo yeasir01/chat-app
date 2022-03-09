@@ -1,6 +1,6 @@
 import { db, DataTypes } from "../config/database.js";
 import bcrypt from "bcrypt";
-import config from "../config/env.js";
+import config from "../config/environment.js";
 
 const User = db.define("user", {
     firstName: {

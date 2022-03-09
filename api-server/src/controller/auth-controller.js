@@ -35,7 +35,7 @@ export const register = async (req, res, next) => {
 
 export const login = (req, res, next) => {
     try {
-        res.status(200).send(`Welcome ${req.user.firstName}`);
+        res.status(200).end();
     } catch (err) {
         next(err);
     }
