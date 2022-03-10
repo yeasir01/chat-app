@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "version": "docker --version && docker-compose --version",
-    "dockerize" : "docker-compose -p chatter --env-file ./.env up "
+    "react" : "cd client && npm start",
+    "api" : "nodemon ./api-server/src/app.js"
   },
   "repository": {
     "type": "git",

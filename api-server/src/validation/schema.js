@@ -36,8 +36,6 @@ const profile = Joi.object({
     firstName: setup.firstName,
     lastName: setup.lastName,
     email: setup.email,
-    handle: setup.handle,
-    password: setup.password,
     image: setup.image
 });
 
