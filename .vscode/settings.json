@@ -5,5 +5,17 @@
         "PGPASSWORD",
         "PGUSER",
         "resave"
+    ],
+    "liveSassCompile.settings.excludeList": [
+        "**/node_modules/**",
+        ".vscode/**",
+        "/api-server/**"
+    ],
+    "liveSassCompile.settings.formats": [
+        {
+            "format": "expanded",
+            "extensionName": ".css",
+            "savePath": "/client/src/styles"
+        }
     ]
 }
