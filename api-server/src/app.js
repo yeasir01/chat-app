@@ -28,7 +28,7 @@ app.use(passport.session());
 app.use(helmet());
 app.use(compression());
 
-app.use("/auth", authRoutes);
+app.use("/api/auth", authRoutes);
 
 app.use(errorHandler);
 

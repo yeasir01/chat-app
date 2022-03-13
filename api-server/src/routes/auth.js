@@ -12,7 +12,7 @@ router.route("/login")
     // @route  GET /auth/login
     // @desc   GET - check credentials and return a session cookie if auth passes.
     // @access Public
-    .get(validate("login"), passport.authenticate("local"), login);
+    .post(validate("login"), passport.authenticate("local"), login);
 
 router.route("/register")
     // @route  GET /auth/register

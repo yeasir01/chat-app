@@ -7,22 +7,30 @@ export const useFetch = (URL = "", OPTION = {}) => {
     const [url, setUrl] = useState(URL);
     const [option, setOption] = useState(OPTION);
 
-    const defaultOptions = {
+    const commonHeaders = {
         headers: {
             "Content-Type": "application/json; charset=UTF-8",
         },
     };
 
-    const parseData = (data) => {
+    const stringifyData = (data) => {
         const isFormData = data instanceof FormData;
-        return isFormData ? data : JSON.parse(data);
+        return isFormData ? data : JSON.stringify(data);
+    }
+
+    const parseToJSON = (data) => {
+        try {
+            return JSON.parse(data);
+        } catch (_) {
+            return data;
+        }
     }
     
-    const req = {
+    const request = {
         get(url = "", opt = {}) {
             setUrl(url);
             setOption({
-                ...defaultOptions, 
+                ...commonHeaders, 
                 ...opt, 
                 method: "GET" 
             });
@@ -30,24 +38,24 @@ export const useFetch = (URL = "", OPTION = {}) => {
         post(url = "", data = {}, opt = {}) {
             setUrl(url);
             setOption({ 
-                ...defaultOptions, 
+                ...commonHeaders, 
                 ...opt, 
                 method: "POST" , 
-                body: parseData(data) 
+                body: stringifyData(data) 
             });
         },
         put(url = "", data = {}, opt = {}) {
             setUrl(url);
             setOption({ 
-                ...defaultOptions, 
+                ...commonHeaders, 
                 ...opt, 
                 method: "PUT" , 
-                body: parseData(data) 
+                body: stringifyData(data) 
             });
         },
         delete(url = "", opt = {}) {
             setOption({
-                ...defaultOptions, 
+                ...commonHeaders, 
                 ...opt, 
                 method: "DELETE" 
             });
@@ -56,18 +64,30 @@ export const useFetch = (URL = "", OPTION = {}) => {
 
     useEffect(() => {
         if (!url) return;
-
+        
         const controller = new AbortController();
         const signal = controller.signal;
 
-        fetch(url, { ...option, signal })
-            .then((res) => res.json())
-            .then((json) => setResponse(json))
-            .catch((err) => setError(err))
-            .finally(() => setLoading(false));
+        async function callAPI(){
+            try {
+                setResponse(null);
+                setError(null);
+                setLoading(true);
+                const res = await fetch(url, {...option, signal});
+                const text = await res.text();
+                const data = parseToJSON(text);
+                res.ok ? setResponse(data): setError(data);
+            } catch (err) {
+                setError(err);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        callAPI();
 
         return () => controller.abort();
     }, [url, option]);
 
-    return { response, error, loading, req };
+    return {response, error, loading, request};
 };

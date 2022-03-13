@@ -11,13 +11,13 @@ export const validate = (schemaName = "", params=false) => {
             next();
         } catch (err) {
             if (err.details) {
-                const errors = err.details.map(e => {
-                    return {
-                        message: e.message, 
-                        key: e.context.key
-                    };
-                });
-                return res.status(422).json(errors);
+                let validationErrors = {};
+
+                for (let item of err.details) {
+                    validationErrors[item.context.key] = item.message;
+                }
+
+                return res.status(422).json({validationErrors});
             }
             return res.status(422).json(err);
         }

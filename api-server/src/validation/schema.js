@@ -10,12 +10,15 @@ const setup = {
         .min(3)
         .max(50),
     email: Joi.string()
-        .email(),
+        .email()
+        .message("Invalid email format"),
     handle: Joi.string(),
     password: Joi.string()
-        .pattern(new RegExp("^[a-zA-Z0-9]{8,40}$")),
+        .pattern(new RegExp("^[a-zA-Z0-9]{8,40}$"))
+        .message("Password must 8-40 characters long"),
     image: Joi.string()
-        .uri()
+        .uri(),
+    remember: Joi.boolean()
 };
 
 const register = Joi.object({
@@ -29,7 +32,8 @@ const register = Joi.object({
 
 const login = Joi.object({
     email: setup.email.required(),
-    password: setup.password.required()
+    password: setup.password.required(),
+    remember: setup.remember.required()
 });
 
 const profile = Joi.object({
