@@ -12,6 +12,7 @@ import passport  from "./config/passport.js";
 import session from "express-session";
 
 const app = express();
+
 app.set("trust proxy", "loopback"); //research this a bit more
 
 const SESSION_OPT = {

@@ -1,13 +1,12 @@
 import React from "react";
-import TextInput from "../components/lib/TextInput.jsx";
+import useAuth from "../hooks/useAuth.jsx";
 
 const DashboardView = function() {
+    const { auth } = useAuth();
     
     return(
         <>
-            <TextInput id="0" label="Name" error="Name cannot be blank"/>
-            <TextInput id="1" label="Name" />
-            <TextInput id="2" label="Name" error="Name cannot be blank"/>
+            <h1>Welcome {auth.user.firstName}</h1>
         </>
     );
 };
