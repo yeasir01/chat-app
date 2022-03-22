@@ -1,4 +1,7 @@
 import * as React from 'react';
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { useFetch } from "../hooks/useFetch.jsx";
+import useAuth from "../hooks/useAuth.jsx";
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -12,9 +15,6 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import Copyright from './Copyright.jsx';
 import AnimatedAlert from './AnimatedAlert.jsx';
-import { Link as RouterLink, useNavigate } from "react-router-dom";
-import useAuth from "../hooks/useAuth.jsx";
-import { useFetch } from "../hooks/useFetch.jsx";
 import background from '../assets/images/bg.svg';
 
 const Register = () => {
@@ -30,6 +30,7 @@ const Register = () => {
   });
 
   const navigate = useNavigate();
+  const serverValError = error?.data?.validationErrors;
 
   const handleChange = (event) => {
       const target = event.target;
@@ -44,7 +45,7 @@ const Register = () => {
 
   React.useEffect(() => {
       if (response?.ok) {
-          return navigate("/login", { replace: true });
+          return navigate("/login", { replace: false });
       }
   }, [navigate, response]);
 
@@ -68,7 +69,7 @@ const Register = () => {
         backgroundPosition: 'center',
       }}
       >
-        <Box component={Paper} elevation={6}  square sx={{p:6, m:6, width: "450px"}}>
+        <Box component={Paper} elevation={6}  square sx={{p:6, m:6, width: "500px"}}>
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }} >
             <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
               <HowToRegOutlinedIcon />
@@ -90,6 +91,8 @@ const Register = () => {
                     onChange={handleChange}
                     label="First Name"
                     autoFocus
+                    helperText={serverValError?.firstName}
+                    error={serverValError?.firstName ? true: false}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -102,6 +105,23 @@ const Register = () => {
                     value={formData.lastName}
                     onChange={handleChange}
                     label="Last Name"
+                    helperText={serverValError?.lastName}
+                    error={serverValError?.lastName ? true: false}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    required
+                    fullWidth
+                    name="handle"
+                    label="Username"
+                    type="handle"
+                    id="handle"
+                    value={formData.handle}
+                    onChange={handleChange}
+                    autoComplete="user-name"
+                    helperText={serverValError?.handle}
+                    error={serverValError?.handle ? true: false}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -114,6 +134,8 @@ const Register = () => {
                     value={formData.email}
                     onChange={handleChange}
                     autoComplete="email"
+                    helperText={serverValError?.email}
+                    error={serverValError?.email ? true: false}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -127,6 +149,8 @@ const Register = () => {
                     value={formData.password}
                     onChange={handleChange}
                     autoComplete="new-password"
+                    helperText={serverValError?.password}
+                    error={serverValError?.password ? true: false}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -140,19 +164,8 @@ const Register = () => {
                     value={formData.passwordRepeat}
                     onChange={handleChange}
                     autoComplete="new-password"
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    required
-                    fullWidth
-                    name="handle"
-                    label="Handle"
-                    type="handle"
-                    id="handle"
-                    value={formData.handle}
-                    onChange={handleChange}
-                    autoComplete="user-name"
+                    helperText={serverValError?.passwordRepeat}
+                    error={serverValError?.passwordRepeat ? true: false}
                   />
                 </Grid>
                 <Grid item xs={12}>

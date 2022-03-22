@@ -19,11 +19,11 @@ export const register = async (req, res, next) => {
         let validationErrors = {};
         
         if (user.handle === handle) {
-            validationErrors["handle"] = "That handle already exists, please try another.";
+            validationErrors["handle"] = "This username already exists.";
         }
         
         if (user.email === email) {
-            validationErrors["email"] = "That email already exists, please try another.";
+            validationErrors["email"] = "This email already exists.";
         }
         
         res.status(422).json({validationErrors});

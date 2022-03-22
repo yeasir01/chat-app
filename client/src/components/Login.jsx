@@ -18,27 +18,6 @@ import Copyright from './Copyright.jsx';
 import AnimatedAlert from './AnimatedAlert.jsx';
 import useAuth from "../hooks/useAuth.jsx";
 
-/* const LoginAlert = ({ statusCode }) => {
-    const statusMessage = {
-        401: "Invalid email or password",
-        404: "Resource not found",
-        422: "Unable to process your request",
-        500: "Server issue, please try again later",
-    };
-
-    const open = statusCode ? true : false;
-
-    return (
-        <Box sx={{ width: "100%", mt: 2 }}>
-          <Collapse in={open} timeout={500}>
-              <Alert severity="warning">
-                  {statusMessage[statusCode] || statusMessage[500]}
-              </Alert>
-          </Collapse>
-        </Box>
-    );
-}; */
-
 const Login = () => {
   const { auth, setAuth } = useAuth();
   const { response, error, isLoading, request } = useFetch();
@@ -51,6 +30,7 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || "/";
+  const serverValError = error?.data?.validationErrors;
 
   const handleChange = (event) => {
     const target = event.target;
@@ -110,6 +90,8 @@ const Login = () => {
                 autoFocus
                 value={formData.email}
                 onChange={handleChange}
+                helperText={serverValError?.email}
+                error={serverValError?.email ? true: false}
               />
               <TextField
                 margin="normal"
@@ -122,6 +104,8 @@ const Login = () => {
                 autoComplete="current-password"
                 value={formData.password}
                 onChange={handleChange}
+                helperText={serverValError?.password}
+                error={serverValError?.password ? true: false}
               />
               <FormControlLabel
                 control={
