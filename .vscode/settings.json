@@ -5,7 +5,8 @@
         "PGHOST",
         "PGPASSWORD",
         "PGUSER",
-        "resave"
+        "resave",
+        "UUIDV"
     ],
     "liveSassCompile.settings.excludeList": [
         "**/node_modules/**",

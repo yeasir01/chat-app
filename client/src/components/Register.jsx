@@ -114,7 +114,7 @@ const Register = () => {
                     required
                     fullWidth
                     name="handle"
-                    label="Username"
+                    label="Handle"
                     type="handle"
                     id="handle"
                     value={formData.handle}

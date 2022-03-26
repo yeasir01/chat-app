@@ -3,7 +3,7 @@ import Alert from '@mui/material/Alert';
 import Collapse from '@mui/material/Collapse';
 import Box from '@mui/material/Box';
 
-const AnimatedAlert = ({ message, severity="warning" }) => {
+const AnimatedAlert = ({ message, severity="error" }) => {
 
     const open = message ? true : false;
 

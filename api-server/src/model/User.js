@@ -3,6 +3,12 @@ import bcrypt from "bcrypt";
 import config from "../config/environment.js";
 
 const User = db.define("user", {
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        allowNull:false,
+        autoIncrement: true
+    },
     firstName: {
         type: DataTypes.STRING,
         allowNull: false
