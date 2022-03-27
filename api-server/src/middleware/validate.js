@@ -19,6 +19,7 @@ export const validate = (schemaName = "", params=false) => {
 
                 return res.status(422).json({validationErrors});
             }
+            
             return res.status(422).json(err);
         }
     };

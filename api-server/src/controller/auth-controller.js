@@ -1,33 +1,11 @@
 "use strict";
 
-import User from "../model/User.js";
-import { Sequelize } from "sequelize";
+import { User } from "../models/index.js";
 
 export const register = async (req, res, next) => {
     try {
-        const { email, handle } = req.body;
-        
-        const user = await User.findOne({
-            where: Sequelize.or({ handle }, { email })
-        });
-
-        if (!user) {
-            await User.create(req.body);
-            return res.status(201).end();
-        }
-        
-        let validationErrors = {};
-        
-        if (user.handle === handle) {
-            validationErrors["handle"] = "This username already exists.";
-        }
-        
-        if (user.email === email) {
-            validationErrors["email"] = "This email already exists.";
-        }
-        
-        res.status(422).json({validationErrors});
-        
+        await User.create(req.body);
+        res.status(201).json({success: true}).end();
     } catch (err) {
         next(err);
     }

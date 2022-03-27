@@ -1,50 +1,82 @@
 "use strict";
 
 import Joi from "joi";
+import { User } from "../models/index.js";
 
-const setup = {
-    firstName: Joi.string()
-        .min(3)
-        .max(50),
-    lastName: Joi.string()
-        .min(3)
-        .max(50),
-    email: Joi.string()
-        .email()
-        .message("Invalid email format"),
+const uniqueEmail = async (email) => {
+    const account = await User.findOne({
+        where: {email},
+    });
+
+    if (account) {
+        throw {
+            details: [
+                {
+                    message: "That email already exists",
+                    path: ["email"],
+                    type: "any.external",
+                    context: { label: "email", key: "email" },
+                },
+            ],
+        };
+    }
+};
+
+const uniqueHandle = async (handle) => {
+    const account = await User.findOne({
+        where: { handle },
+    });
+
+    if (account) {
+        throw {
+            details: [
+                {
+                    message: "That handle already exists",
+                    path: ["handle"],
+                    type: "any.external",
+                    context: { label: "handle", key: "handle" },
+                },
+            ],
+        };
+    }
+};
+
+const common = {
+    firstName: Joi.string().min(3).max(50),
+    lastName: Joi.string().min(3).max(50),
+    email: Joi.string().email().message("Invalid email format"),
     handle: Joi.string(),
     password: Joi.string()
         .pattern(new RegExp("^[a-zA-Z0-9]{8,40}$"))
         .message("Password must 8-40 characters long"),
-    image: Joi.string()
-        .uri(),
-    remember: Joi.boolean()
+    image: Joi.string().uri(),
+    remember: Joi.boolean(),
 };
 
 const register = Joi.object({
-    firstName: setup.firstName.required(),
-    lastName: setup.lastName.required(),
-    email: setup.email.required(),
-    handle: setup.handle.required(),
-    password: setup.password.required(),
-    passwordRepeat: Joi.ref("password")
+    firstName: common.firstName.required(),
+    lastName: common.lastName.required(),
+    email: common.email.required().external(uniqueEmail),
+    handle: common.handle.required().external(uniqueHandle),
+    password: common.password.required(),
+    passwordRepeat: Joi.ref("password"),
 });
 
 const login = Joi.object({
-    email: setup.email.required(),
-    password: setup.password.required(),
-    remember: setup.remember.required()
+    email: common.email.required(),
+    password: common.password.required(),
+    remember: common.remember.required(),
 });
 
 const profile = Joi.object({
-    firstName: setup.firstName,
-    lastName: setup.lastName,
-    email: setup.email,
-    image: setup.image
+    firstName: common.firstName,
+    lastName: common.lastName,
+    email: common.email,
+    image: common.image,
 });
 
 export default {
     register,
     login,
-    profile
+    profile,
 };

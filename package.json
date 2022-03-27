@@ -17,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/yeasir01/chatter/issues"
   },
-  "homepage": "https://github.com/yeasir01/chatter#readme"
+  "homepage": "https://github.com/yeasir01/chatter#readme",
+  "devDependencies": {
+    "sequelize-cli": "^6.4.1"
+  }
 }

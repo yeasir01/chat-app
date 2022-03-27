@@ -7,7 +7,7 @@ import helmet from "helmet";
 import config from "./config/environment.js";
 import authRoutes from "./routes/auth.js";
 import errorHandler from "./middleware/error-handler.js";
-import { db } from "./config/database.js";
+import { sequelize } from "./models/index.js";
 import passport  from "./config/passport.js";
 import session from "express-session";
 
@@ -36,11 +36,11 @@ app.use(errorHandler);
 const startServer = async () => {
   try {
     console.log("Connecting to db...");
-    await db.sync({force: true});
-    await db.authenticate();
+    await sequelize.sync({force: true});
+    await sequelize.authenticate();
     app.listen(config.port, () => console.log("API server ready to accept requests on port", config.port));
   } catch (err) {
-    console.log(err);
+    console.trace(err);
   }
 };
 
