@@ -53,7 +53,7 @@ services:
       redis:
         condition: service_healthy
     build:
-      context: /api-server
+      context: /server
       dockerfile: dockerfile
     ports:
       - ${API_PORT}:${API_PORT}

@@ -5,29 +5,33 @@ import config from "../config/environment.js";
 import userSchema from "./User.js";
 import messageSchema from "./Message.js";
 import participantSchema from "./Participant.js";
-import threadSchema from "./Thread.js";
+import groupSchema from "./Group.js";
 
 const sequelize = new Sequelize(config.sequelize);
 
 const User = userSchema(sequelize, Sequelize.DataTypes);
 const Message = messageSchema(sequelize, Sequelize.DataTypes);
 const Participant = participantSchema(sequelize, Sequelize.DataTypes);
-const Thread = threadSchema(sequelize, Sequelize.DataTypes);
-
-User.hasMany(Participant, {
-    foreignKey: "userID"
-});
+const Group = groupSchema(sequelize, Sequelize.DataTypes);
 
 User.hasMany(Message, {
     foreignKey: "userID"
 });
 
-Thread.hasMany(Message,{
-    foreignKey: "threadID"
+User.hasMany(Participant, {
+    foreignKey: "userID"
 });
 
-Thread.hasMany(Participant,{
-    foreignKey: "threadID"
+User.hasMany(Group, {
+    foreignKey: "ownerID"
+});
+
+Group.hasMany(Participant,{
+    foreignKey: "groupID"
+});
+
+Group.hasMany(Message, {
+    foreignKey: "groupID"
 });
 
 export {
@@ -36,5 +40,5 @@ export {
     User,
     Message,
     Participant,
-    Thread
+    Group
 };

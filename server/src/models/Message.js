@@ -1,7 +1,7 @@
 "use strict";
 
 export default (sequelize, DataTypes) => {
-    const Thread = sequelize.define("Thread",
+    const Message = sequelize.define("Message",
         {
             id: {
                 type: DataTypes.INTEGER,
@@ -9,20 +9,17 @@ export default (sequelize, DataTypes) => {
                 allowNull: false,
                 autoIncrement: true,
             },
-            subject: {
-                type: DataTypes.STRING,
+            body: {
+                type: DataTypes.TEXT,
                 allowNull: false,
-            },
-            deletedAt: {
-                type: DataTypes.DATE,
-                allowNull: false,
-            },
+            }
         },
         {
             timestamps: true,
-            tableName: "threads",
+            tableName: "messages",
+            paranoid: true,
         }
     );
 
-    return Thread;
+    return Message;
 };

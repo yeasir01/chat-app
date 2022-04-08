@@ -10,7 +10,7 @@ import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 
-const useStyles = ()=> ({
+const useStyles = () => ({
     root: {
         height: "100vh",
     },

@@ -12,16 +12,12 @@ export default (sequelize, DataTypes) => {
             lastRead: {
                 type: DataTypes.DATE,
                 allowNull: false,
-            },
-            deletedAt: {
-                type: DataTypes.DATE,
-                allowNull: true,
-                defaultValue: null,
-            },
+            }
         },
         {
             timestamps: true,
             tableName: "participants",
+            paranoid: true,
         }
     );
 

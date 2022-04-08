@@ -1,5 +1,5 @@
 export default {
-    port: process.env.API_PORT,
+    port: parseInt(process.env.API_PORT),
     saltRounds: parseInt(process.env.SALT_ROUNDS),
     sequelize: {
         username: process.env.POSTGRES_USER,

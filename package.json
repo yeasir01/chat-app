@@ -6,7 +6,7 @@
   "scripts": {
     "version": "docker --version && docker-compose --version",
     "react": "cd client && npm start",
-    "api": "nodemon ./api-server/src/app.js"
+    "server": "nodemon ./server/src/app.js"
   },
   "repository": {
     "type": "git",

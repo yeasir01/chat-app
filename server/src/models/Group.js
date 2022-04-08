@@ -1,7 +1,7 @@
 "use strict";
 
 export default (sequelize, DataTypes) => {
-    const Message = sequelize.define("Message",
+    const Group = sequelize.define("Group",
         {
             id: {
                 type: DataTypes.INTEGER,
@@ -9,21 +9,25 @@ export default (sequelize, DataTypes) => {
                 allowNull: false,
                 autoIncrement: true,
             },
-            body: {
-                type: DataTypes.TEXT,
+            name: {
+                type: DataTypes.STRING,
                 allowNull: false,
             },
-            deletedAt: {
-                type: DataTypes.DATE,
+            image: {
+                type: DataTypes.STRING,
                 allowNull: true,
-                defaultValue: null,
             },
+            isPublic: {
+                type: DataTypes.BOOLEAN,
+                defaultValue: false
+            }
         },
         {
             timestamps: true,
-            tableName: "messages",
+            tableName: "groups",
+            paranoid: true,
         }
     );
 
-    return Message;
+    return Group;
 };
