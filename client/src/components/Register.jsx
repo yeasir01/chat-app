@@ -175,7 +175,7 @@ const Register = () => {
                     />
                 </Grid>
               </Grid>
-              <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} >
+              <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2, py: 1.5 }} >
                 {isLoading ? "Loading..." : "Submit"}
               </Button>
               <Grid container justifyContent="flex-end">

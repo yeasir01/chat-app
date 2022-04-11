@@ -1,24 +1,48 @@
 import React from "react";
-//import useAuth from "../hooks/useAuth.jsx";
 import SideBar from "../components/SideBar.jsx";
 import ChatList from "../components/ChatList.jsx";
 import ChatFeed from "../components/ChatFeed.jsx";
-//import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
+import io from 'socket.io-client'; 
 
 const useStyles = ()=>({
     root: {
-        gap: 0
+        gap: 2,
+        height: "100vh",
+        padding: 2
     },
     side: {
-        width: "100px"
+        background: "primary.main"
     },
     list: {
         width: "350px"
+    },
+    chatFeed: {
+        minWidth: "450px",
+        minHeight: "450px"
     }
 })
 
-const DashboardView = function() {
+const DashboardView = () => {
+
+/*     const origin = window.location.origin;
+    const socket = io(origin);
+
+    React.useEffect(() => {
+        socket.on("connect", () => {
+            console.log("now connected");
+        });
+
+        return () => socket.off("connect");
+    }, [socket]);
+
+    React.useEffect(() => {
+        socket.on("new-user", (msg) => {
+            console.log(msg);
+        });
+
+        return () => socket.off("new-user");
+    }, [socket]); */
 
     const classes = useStyles();
 
@@ -30,7 +54,7 @@ const DashboardView = function() {
             <Grid item sx={classes.list}>
                 <ChatList />
             </Grid>
-            <Grid item xs>
+            <Grid item xs sx={classes.chatFeed}>
                 <ChatFeed />
             </Grid>
         </Grid>

@@ -2,7 +2,7 @@
 
 const authorize = (req, res, next) => {
 
-    if (!req.isAuthenticated()) {
+    if (req.isUnauthenticated()) {
         return res.status(403).json({message: "You dont have permission to access that resource!"});
     }
 

@@ -9,7 +9,7 @@ const useStyles = ()=>({
     }
 })
 
-const SearchBar = () => {
+const SearchBar = ({placeHolder}) => {
 
     const classes = useStyles();
 
@@ -18,7 +18,7 @@ const SearchBar = () => {
             <TextField
                 size="small"
                 sx={classes.textField}
-                placeholder="search..."
+                placeholder={placeHolder || "search..."}
                 InputProps={{
                     startAdornment: <InputAdornment position="start"><SearchIcon /></InputAdornment>,
                 }}

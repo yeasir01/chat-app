@@ -20,6 +20,15 @@ export const login = (req, res, next) => {
     }
 };
 
+export const getProfile = (req, res, next) => {
+    try {
+        const { email, handle, id } = req.user;
+        res.status(200).json({ user: { email, handle, id } });
+    } catch (err) {
+        next(err);
+    }
+};
+
 export const updateProfile = async (req, res, next) => {
     try {
         const user = await User.update(req.body, {

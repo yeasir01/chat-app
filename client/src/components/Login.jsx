@@ -34,7 +34,7 @@ const Login = () => {
 
   const handleChange = (event) => {
     const target = event.target;
-    const value = (target.type === "checkbox") ? target.checked : target.value;
+    const value = target.type === "checkbox" ? target.checked : target.value;
     setFormData((prev) => ({ ...prev, [target.name]: value }));
   };
   
@@ -44,7 +44,7 @@ const Login = () => {
   };
 
   React.useEffect(() => {
-    if (response?.ok) {
+    if (response?.data?.user) {
         setAuth({
             user: response.data.user,
             isAuthenticated: true,
@@ -117,7 +117,7 @@ const Login = () => {
                 type="submit"
                 fullWidth
                 variant="contained"
-                sx={{ mt: 1, mb: 2}}
+                sx={{ mt: 1, mb: 2, py: 1.5}}
               >
                 {isLoading ? "Loading..." : "Submit"}
               </Button>

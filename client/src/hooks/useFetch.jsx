@@ -59,6 +59,7 @@ export const useFetch = (URL = "", OPTIONS = {}) => {
             });
         },
         delete(url = "", opt = {}) {
+            setUrl(url);
             setOption({
                 ...commonHeaders,
                 ...opt,
@@ -76,9 +77,9 @@ export const useFetch = (URL = "", OPTIONS = {}) => {
 
         async function callAPI() {
             try {
+                setIsLoading(true);
                 setResponse(null);
                 setError(null);
-                setIsLoading(true);
                 const res = await fetch(url, { ...option, signal });
                 const text = await res.text();
                 const data = {
