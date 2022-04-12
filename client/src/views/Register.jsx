@@ -13,8 +13,8 @@ import Box from '@mui/material/Box';
 import HowToRegOutlinedIcon from '@mui/icons-material/HowToRegOutlined';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
-import Copyright from './Copyright.jsx';
-import AnimatedAlert from './AnimatedAlert.jsx';
+import Copyright from '../components/Copyright.jsx';
+import AnimatedAlert from '../components/AnimatedAlert.jsx';
 import background from '../assets/images/bg.svg';
 
 const Register = () => {

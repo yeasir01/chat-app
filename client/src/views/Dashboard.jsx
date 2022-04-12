@@ -2,7 +2,9 @@ import React from "react";
 import SideBar from "../components/SideBar.jsx";
 import ChatList from "../components/ChatList.jsx";
 import ChatFeed from "../components/ChatFeed.jsx";
+import NoChatSelected from "../components/NoChatSelected.jsx";
 import Grid from '@mui/material/Grid';
+import { Routes, Route } from "react-router-dom";
 import io from 'socket.io-client'; 
 
 const useStyles = ()=>({
@@ -46,7 +48,7 @@ const DashboardView = () => {
 
     const classes = useStyles();
 
-    return(
+    return (
         <Grid container sx={classes.root}>
             <Grid item sx={classes.side}>
                 <SideBar />
@@ -55,7 +57,10 @@ const DashboardView = () => {
                 <ChatList />
             </Grid>
             <Grid item xs sx={classes.chatFeed}>
-                <ChatFeed />
+                <Routes>
+                    <Route path="/*" element={<NoChatSelected />} />
+                    <Route path="/chats" element={<ChatFeed />} />
+                </Routes>
             </Grid>
         </Grid>
     );

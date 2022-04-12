@@ -2,51 +2,68 @@ import React from "react";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
+import Tooltip from '@mui/material/Tooltip';
 
 const ChatFeedBubbles = ({messages}) => {
     const user = { id: 1 };
+
+    const lastMessageRef = React.useRef(null);
+
+    React.useEffect(() => {
+        lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
+    }, [messages]);
 
     const styles = (isOwner) => ({
         bubble: {
             backgroundColor: isOwner ? "primary.main" : "secondary.main",
             color: isOwner ? "primary.contrastText": "secondary.contrastText",
-            borderRadius: isOwner ? "15px 0 20px 15px" : "0 15px 15px 20px",
-            px: 3.5,
-            py: 1.5,
+            cursor: "pointer",
+            borderRadius: 5,
+            px: 2,
+            py: 1,
         },
-        text: {
+        toolTipTitle: {
             textAlign: isOwner ? "right" : "left",
-            color: "text.secondary",
-            fontSize: 12,
-            py: .5,
-            px: 1,
-            whiteSpace: "pre-line"
+        },
+        toolTipBody: {
+            textAlign: isOwner ? "right" : "left"
         },
     });
 
     return (
         <>
             {messages.map((message) => {
-                const isOwner = user.id === message.userID;
-                const dateTime = new Date(parseInt(message.createdAt));
-                const date = dateTime.toLocaleDateString();
-                const time = dateTime.toLocaleTimeString();
-                const classes = styles(isOwner);
+                const isMessageOwner = user.id === message.userID;
+                const date = new Date(parseInt(message.createdAt));
+                const time = date.toLocaleTimeString([], {
+                    year: 'numeric', 
+                    month: 'numeric', 
+                    day: 'numeric', 
+                    hour: '2-digit', 
+                    minute: '2-digit'
+                });
+                const classes = styles(isMessageOwner);
                 
                 return (
-                    <Grid container width={1} justifyContent={isOwner ? "flex-end" : "flex-start"} key={message.id}>
-                        <Grid item sx={{maxWidth: .5}}>
-                                <Typography sx={classes.text}>{message.handle}</Typography>
-                                <Paper elevation={0} sx={classes.bubble}>
-                                    <Typography variant="body1" sx={{whiteSpace: 'pre-line'}}>{message.body}</Typography>
-                                </Paper>
-                                <Typography sx={classes.text}>
-                                    {date} {time}
-                                </Typography>
+                    <Grid container width={1} justifyContent={isMessageOwner ? "flex-end" : "flex-start"} key={message.id}>
+                        <Grid item sx={{maxWidth: 0.5, my: 1}}>
+                               <Tooltip
+                                placement={isMessageOwner ? "left" : "right"}
+                                title={
+                                        <>
+                                            <Typography variant="subtitle2" sx={classes.toolTipTitle}>{message.handle}</Typography>
+                                            <Typography variant="caption" sx={classes.toolTipBody}>{time}</Typography>                            
+                                        </>
+                                } arrow >
+                                    <Paper elevation={0} sx={classes.bubble}>
+                                        <Typography variant="body1" sx={{whiteSpace: 'pre-line'}}>{message.body}</Typography>
+                                    </Paper>
+                                </Tooltip>
                         </Grid>
                     </Grid>
                 );
             })}
+            <div ref={lastMessageRef}></div>
         </>
     )
 };

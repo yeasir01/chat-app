@@ -6,7 +6,6 @@ import Avatar from "@mui/material/Avatar";
 import Badge from "@mui/material/Badge";
 import IconButton from "@mui/material/IconButton";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
-import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
 import SendOutlinedIcon from '@mui/icons-material/SendOutlined';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -14,6 +13,7 @@ import Divider from '@mui/material/Divider';
 import ChatFeedBubbles from "./ChatFeedBubbles.jsx";
 import ListItemText from "@mui/material/ListItemText";
 import mockChats from "../mock/messages";
+import EmojiButton from "./EmojiButton.jsx";
 
 const useStyles = () => ({
     root: {
@@ -50,43 +50,18 @@ const useStyles = () => ({
     }
 });
 
+const keyPress = {
+    Shift: false,
+    Enter: false
+}
+
 const ChatArea = () => {
-    const classes = useStyles();
     const [chatList, setChatList] = React.useState(mockChats);
+    const [mockID, setMockID] = React.useState(9);
     const [message, setMessage] = React.useState("");
-    const [mockID, setMockID] = React.useState(9)
-
-    let keysPressed = {
-        Shift: false,
-        Enter: false
-    };
-
-    const handleKeyDown = (event) => {
-
-        if (event.key === "Shift" || event.key === "Enter"){
-            keysPressed[event.key] = true;
-        }
-        
-        if (keysPressed["Shift"] && keysPressed["Enter"]){
-            return;
-        }
-        
-        if (event.key === "Enter") {
-            event.preventDefault();
-            sendMessage();
-        }
-    }
-
-    const handleKeyUp = (event) => {
-        if (event.key === "Shift" || event.key === "Enter"){
-            keysPressed[event.key] = false;
-        }
-    }
-
-    const handleChange = (event) => {
-        setMessage(event.target.value)
-    }
-
+    
+    const classes = useStyles();
+    
     const sendMessage = () => {
         if (message.trim()) {
             const msg = {
@@ -100,6 +75,32 @@ const ChatArea = () => {
             setChatList(prev => [...prev, msg]);
             setMessage("");
         }
+    }
+
+    const handleKeyDown = (event) => {
+        if (event.key === "Shift" || event.key === "Enter") {
+            keyPress[event.key] = true;
+        }
+
+        if (keyPress["Enter"] && !keyPress["Shift"]) {
+            event.preventDefault();
+            sendMessage();
+        }
+    }
+
+    const handleKeyUp = (event) => {
+        if (event.key === "Shift" || event.key === "Enter"){
+            keyPress[event.key] = false;
+        }
+    }
+
+    const handleInputChange = (event) => {
+        setMessage(event.target.value)
+    }
+
+    const handleEmojiSelection = (emoji) => {
+        console.log(emoji)
+        setMessage(prev => prev + emoji);
     }
 
     return (
@@ -126,7 +127,7 @@ const ChatArea = () => {
                 <Grid item>
                     <Divider />
                 </Grid>
-                <Grid item xs padding={3} sx={{overflowY: "auto"}}>
+                <Grid item xs padding={4} sx={{overflowY: "auto"}}>
                     <ChatFeedBubbles messages={chatList} />
                 </Grid>
                 <Grid item>
@@ -142,13 +143,11 @@ const ChatArea = () => {
                         gap={1}
                     >
                         <Grid item>
-                            <IconButton size="large">
-                                <InsertEmoticonIcon color="warning" fontSize="inherit"/>
-                            </IconButton>
+                            <EmojiButton handleSelect={handleEmojiSelection}/>
                         </Grid>
                         <Grid item xs>
                             <TextField
-                                onChange={handleChange}
+                                onChange={handleInputChange}
                                 onKeyDown={handleKeyDown}
                                 onKeyUp={handleKeyUp}
                                 value={message}
@@ -159,6 +158,7 @@ const ChatArea = () => {
                                 multiline
                                 maxRows={4}
                                 InputProps={{
+                                    sx: {pl: 3},
                                     endAdornment: (
                                         <InputAdornment position="end">
                                             <IconButton onClick={sendMessage}>

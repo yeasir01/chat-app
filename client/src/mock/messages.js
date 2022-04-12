@@ -20,13 +20,6 @@ const messages = [
         createdAt: "1649369910052",
         body: "😀 Good, thanks for asking!"
     },
-    {
-        id: 4,
-        userID: 1,
-        handle: "yeasir01",
-        createdAt: "1649379910052",
-        body: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Perferendis numquam fugiat dolor reprehenderit facilis perspiciatis dolorem ullam."
-    }
 ];
 
 export default messages;

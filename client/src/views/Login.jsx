@@ -12,11 +12,11 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
+import Copyright from '../components/Copyright.jsx';
+import AnimatedAlert from '../components/AnimatedAlert.jsx';
+import useAuth from "../hooks/useAuth.jsx";
 
 import background from '../assets/images/bg.svg';
-import Copyright from './Copyright.jsx';
-import AnimatedAlert from './AnimatedAlert.jsx';
-import useAuth from "../hooks/useAuth.jsx";
 
 const Login = () => {
   const { auth, setAuth } = useAuth();
