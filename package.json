@@ -7,7 +7,7 @@
     "version": "docker --version && docker-compose --version",
     "react": "cd client && npm start",
     "server": "nodemon ./server/src/app.js",
-    "seeder": "node ./server/seeder/seed.js"
+    "seed": "cd server && npm run seed"
   },
   "repository": {
     "type": "git",
