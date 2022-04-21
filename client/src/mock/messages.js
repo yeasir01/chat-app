@@ -18,7 +18,7 @@ const messages = [
         userID: 1,
         handle: "yeasir01",
         createdAt: "1649369910052",
-        body: "😀 Good, thanks for asking!"
+        body: "😀 Good, thanks for asking! \n this chat works great!"
     },
 ];
 

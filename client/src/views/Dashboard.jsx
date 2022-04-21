@@ -4,8 +4,6 @@ import ChatList from "../components/ChatList.jsx";
 import ChatFeed from "../components/ChatFeed.jsx";
 import NoChatSelected from "../components/NoChatSelected.jsx";
 import Grid from '@mui/material/Grid';
-import { Routes, Route } from "react-router-dom";
-import io from 'socket.io-client'; 
 
 const useStyles = ()=>({
     root: {
@@ -17,36 +15,22 @@ const useStyles = ()=>({
         background: "primary.main"
     },
     list: {
-        width: "350px"
+        minWidth: 350
     },
     chatFeed: {
-        minWidth: "450px",
-        minHeight: "450px"
+        minWidth: 350,
+        minHeight: 350
     }
 })
 
 const DashboardView = () => {
-
-/*     const origin = window.location.origin;
-    const socket = io(origin);
-
-    React.useEffect(() => {
-        socket.on("connect", () => {
-            console.log("now connected");
-        });
-
-        return () => socket.off("connect");
-    }, [socket]);
-
-    React.useEffect(() => {
-        socket.on("new-user", (msg) => {
-            console.log(msg);
-        });
-
-        return () => socket.off("new-user");
-    }, [socket]); */
+    const [conversation, setConversations] = React.useState([]);
+    const [filteredConversations, setFilteredConversations] = React.useState([]);
+    const [activeConversation, setActiveConversation] = React.useState(null);
+    const [messages, setMessages] = React.useState([]);
 
     const classes = useStyles();
+    const isActive = Boolean(activeConversation);
 
     return (
         <Grid container sx={classes.root}>
@@ -54,13 +38,10 @@ const DashboardView = () => {
                 <SideBar />
             </Grid>
             <Grid item sx={classes.list}>
-                <ChatList />
+                <ChatList setConversation={setActiveConversation} />
             </Grid>
             <Grid item xs sx={classes.chatFeed}>
-                <Routes>
-                    <Route path="/*" element={<NoChatSelected />} />
-                    <Route path="/chats" element={<ChatFeed />} />
-                </Routes>
+                {isActive ? <ChatFeed groupDetails={activeConversation} /> : <NoChatSelected />}
             </Grid>
         </Grid>
     );

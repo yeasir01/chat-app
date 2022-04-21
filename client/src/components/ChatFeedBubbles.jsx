@@ -18,7 +18,7 @@ const ChatFeedBubbles = ({messages}) => {
             backgroundColor: isOwner ? "primary.main" : "secondary.main",
             color: isOwner ? "primary.contrastText": "secondary.contrastText",
             cursor: "pointer",
-            borderRadius: 5,
+            borderRadius: isOwner ? "20px 20px 0 20px": "20px 20px 20px 0",
             px: 2,
             py: 1,
         },
@@ -34,6 +34,7 @@ const ChatFeedBubbles = ({messages}) => {
         <>
             {messages.map((message) => {
                 const isMessageOwner = user.id === message.userID;
+                const uniqueKey = message.id + message.createdAt;
                 const date = new Date(parseInt(message.createdAt));
                 const time = date.toLocaleTimeString([], {
                     year: 'numeric', 
@@ -42,10 +43,11 @@ const ChatFeedBubbles = ({messages}) => {
                     hour: '2-digit', 
                     minute: '2-digit'
                 });
+                
                 const classes = styles(isMessageOwner);
                 
                 return (
-                    <Grid container width={1} justifyContent={isMessageOwner ? "flex-end" : "flex-start"} key={message.id}>
+                    <Grid container width={1} justifyContent={isMessageOwner ? "flex-end" : "flex-start"} key={uniqueKey}>
                         <Grid item sx={{maxWidth: 0.5, my: 1}}>
                                <Tooltip
                                 placement={isMessageOwner ? "left" : "right"}

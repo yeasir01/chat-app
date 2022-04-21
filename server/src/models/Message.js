@@ -1,7 +1,7 @@
 "use strict";
 
 export default (sequelize, DataTypes) => {
-    const Message = sequelize.define("Message",
+    const Message = sequelize.define("message",
         {
             id: {
                 type: DataTypes.INTEGER,
@@ -20,6 +20,11 @@ export default (sequelize, DataTypes) => {
             paranoid: true,
         }
     );
+
+    Message.associate = ({User, Chat}) => {
+        Message.belongsTo(User);
+        Message.belongsTo(Chat);
+    };
 
     return Message;
 };

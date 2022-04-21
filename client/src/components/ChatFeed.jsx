@@ -3,7 +3,6 @@ import Box from "@mui/system/Box";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import Avatar from "@mui/material/Avatar";
-import Badge from "@mui/material/Badge";
 import IconButton from "@mui/material/IconButton";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import SendOutlinedIcon from '@mui/icons-material/SendOutlined';
@@ -47,7 +46,7 @@ const useStyles = () => ({
     avatar: {
         height: 45,
         width: 45
-    }
+    },
 });
 
 const keyPress = {
@@ -55,25 +54,24 @@ const keyPress = {
     Enter: false
 }
 
-const ChatArea = () => {
-    const [chatList, setChatList] = React.useState(mockChats);
-    const [mockID, setMockID] = React.useState(9);
-    const [message, setMessage] = React.useState("");
+const ChatFeed = ({groupDetails}) => {
+    const [messages, setMessages] = React.useState(mockChats);
+    const [input, setInput] = React.useState("");
     
+    const isNotEmpty = Boolean(input.trim());
     const classes = useStyles();
-    
+
     const sendMessage = () => {
-        if (message.trim()) {
-            const msg = {
-                id: mockID,
-                body: message,
+        if (isNotEmpty) {
+            const newMessage = {
+                id: 121,
+                body: input,
                 createdAt: Date.now(),
                 handle: "yeasir01",
                 userID: 1
             }
-            setMockID(prev => prev + 1);
-            setChatList(prev => [...prev, msg]);
-            setMessage("");
+            setMessages(prevMessages => [...prevMessages, newMessage]);
+            setInput("");
         }
     }
 
@@ -95,12 +93,11 @@ const ChatArea = () => {
     }
 
     const handleInputChange = (event) => {
-        setMessage(event.target.value)
+        setInput(event.target.value)
     }
 
     const handleEmojiSelection = (emoji) => {
-        console.log(emoji)
-        setMessage(prev => prev + emoji);
+        setInput(prev => prev + emoji);
     }
 
     return (
@@ -108,15 +105,8 @@ const ChatArea = () => {
             <Grid container direction="column" height={1}>
                 <Grid item sx={classes.headerGroup}>
                     <Box sx={classes.headerItem}>
-                        <Badge
-                            invisible={false}
-                            color="success"
-                            overlap="circular"
-                            variant="dot"
-                        >
-                            <Avatar sx={classes.avatar} src="https://res.cloudinary.com/culturemap-com/image/upload/ar_4:3,c_fill,g_faces:center,w_980/v1515002138/photos/267296_original.jpg" />
-                        </Badge>
-                        <ListItemText primary="Rick Smith" secondary="ricky1987" />
+                        <Avatar sx={classes.avatar} src={groupDetails.img} />
+                        <ListItemText primary={groupDetails.groupName} secondary="ricky1987" />
                     </Box>
                     <Box>
                         <IconButton>
@@ -128,7 +118,7 @@ const ChatArea = () => {
                     <Divider />
                 </Grid>
                 <Grid item xs padding={4} sx={{overflowY: "auto"}}>
-                    <ChatFeedBubbles messages={chatList} />
+                    <ChatFeedBubbles messages={messages} />
                 </Grid>
                 <Grid item>
                     <Divider />
@@ -150,7 +140,7 @@ const ChatArea = () => {
                                 onChange={handleInputChange}
                                 onKeyDown={handleKeyDown}
                                 onKeyUp={handleKeyUp}
-                                value={message}
+                                value={input}
                                 fullWidth
                                 placeholder="Type a message"
                                 sx={classes.input}
@@ -167,6 +157,7 @@ const ChatArea = () => {
                                         </InputAdornment>
                                     ),
                                 }}
+                                autoFocus
                             />
                         </Grid>
                     </Grid>
@@ -176,4 +167,4 @@ const ChatArea = () => {
     );
 };
 
-export default ChatArea;
+export default ChatFeed;

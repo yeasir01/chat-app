@@ -2,43 +2,29 @@
 
 import Sequelize from "sequelize";
 import config from "../config/environment.js";
+
+// models import
 import userSchema from "./User.js";
 import messageSchema from "./Message.js";
 import participantSchema from "./Participant.js";
-import groupSchema from "./Group.js";
+import chatSchema from "./Chat.js";
 
 const sequelize = new Sequelize(config.sequelize);
 
-const User = userSchema(sequelize, Sequelize.DataTypes);
-const Message = messageSchema(sequelize, Sequelize.DataTypes);
-const Participant = participantSchema(sequelize, Sequelize.DataTypes);
-const Group = groupSchema(sequelize, Sequelize.DataTypes);
-
-User.hasMany(Message, {
-    foreignKey: "userID"
-});
-
-User.hasMany(Participant, {
-    foreignKey: "userID"
-});
-
-User.hasMany(Group, {
-    foreignKey: "ownerID"
-});
-
-Group.hasMany(Participant,{
-    foreignKey: "groupID"
-});
-
-Group.hasMany(Message, {
-    foreignKey: "groupID"
-});
-
-export {
-    sequelize,
-    Sequelize,
-    User,
-    Message,
-    Participant,
-    Group
+const db = {
+    User: userSchema(sequelize, Sequelize.DataTypes),
+    Message: messageSchema(sequelize, Sequelize.DataTypes),
+    Participant: participantSchema(sequelize, Sequelize.DataTypes),
+    Chat: chatSchema(sequelize, Sequelize.DataTypes),
 };
+
+Object.keys(db).forEach( modelName => {
+    if (db[modelName].associate) {
+      db[modelName].associate(db);
+    }
+});
+
+db.sequelize = sequelize;
+db.Sequelize = Sequelize;
+
+export default db;

@@ -2,7 +2,7 @@
 
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import { User } from "../models/index.js";
+import db from "../models/index.js";
 
 const options = {
     usernameField: "email",
@@ -12,7 +12,7 @@ const options = {
 passport.use(
     new LocalStrategy(options, async (email, password, done) => {
         try {
-            const user = await User.findOne({ where: { email: email } });
+            const user = await db.User.findOne({ where: { email: email } });
 
             if (!user) {
                 return done(null, false);
@@ -39,7 +39,7 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser(async (id, done) => {
     try {
-        const user = await User.findByPk(id);
+        const user = await db.User.findByPk(id);
         user ? done(null, user) : done(null, null);
     } catch (err) {
         done(err, null);

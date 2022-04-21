@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 
 const AnimatedAlert = ({ message, severity="error" }) => {
 
-    const open = message ? true : false;
+    const open = Boolean(message);
 
     return (
         <Box sx={{ width: "100%", mt: 2 }}>

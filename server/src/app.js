@@ -6,9 +6,10 @@ import http from "http";
 import compression from "compression";
 import helmet from "helmet";
 import config from "./config/environment.js";
-import authRoutes from "./routes/auth.js";
+import userRoutes from "./routes/user-routes.js";
+import chatRoutes from "./routes/chat-routes.js";
 import errorHandler from "./middleware/error-handler.js";
-import { sequelize } from "./models/index.js";
+import db from "./models/index.js";
 import { Server } from "socket.io";
 import passport  from "./config/passport.js";
 import session from "express-session";
@@ -33,7 +34,8 @@ app.use(passport.session());
 app.use(helmet());
 app.use(compression());
 
-app.use("/api/auth", authRoutes);
+app.use("/api/auth", userRoutes);
+app.use("/api/chats", chatRoutes);
 
 // convert a connect middleware to a Socket.IO middleware
 const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
@@ -61,8 +63,8 @@ app.use(errorHandler);
 const startServer = async () => {
   try {
     console.log("Connecting to db...");
-    await sequelize.sync({alter: true});
-    await sequelize.authenticate();
+    await db.sequelize.authenticate();
+    await db.sequelize.sync({alter: true}); //alter or force
     httpServer.listen(config.port, () => console.log("Server running on port", config.port));
   } catch (err) {
     console.trace(err);

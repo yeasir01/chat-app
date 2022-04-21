@@ -1,10 +1,10 @@
 "use strict";
 
 import Joi from "joi";
-import { User } from "../models/index.js";
+import db from "../models/index.js";
 
-const uniqueEmail = async (email) => {
-    const account = await User.findOne({
+const isUniqueEmail = async (email) => {
+    const account = await db.User.findOne({
         where: {email},
     });
 
@@ -22,8 +22,8 @@ const uniqueEmail = async (email) => {
     }
 };
 
-const uniqueHandle = async (handle) => {
-    const account = await User.findOne({
+const isUniqueHandle = async (handle) => {
+    const account = await db.User.findOne({
         where: { handle },
     });
 
@@ -56,8 +56,8 @@ const common = {
 const register = Joi.object({
     firstName: common.firstName.required(),
     lastName: common.lastName.required(),
-    email: common.email.required().external(uniqueEmail),
-    handle: common.handle.required().external(uniqueHandle),
+    email: common.email.required().external(isUniqueEmail),
+    handle: common.handle.required().external(isUniqueHandle),
     password: common.password.required(),
     passwordRepeat: Joi.ref("password"),
 });

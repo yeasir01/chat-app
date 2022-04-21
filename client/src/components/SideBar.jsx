@@ -1,7 +1,6 @@
 import React from 'react';
 import Paper from '@mui/material/Paper';
 import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
-import ListItemText from '@mui/material/ListItemText';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItem from '@mui/material/ListItem';
 import List from '@mui/material/List';
@@ -14,32 +13,29 @@ import useAuth from "../hooks/useAuth.jsx";
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 
-
 const useStyle = () =>({
     root: {
-        display: "flex",
-        justifyContent: "space-between",
-        flexDirection: "column",
-        overflow: "hidden",
         height: 1,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
         borderRadius: 2,
     },
-    list: {
-        padding:0
-    },
     listItem: {
-        padding:0,
-    },
-    listItemButton: {
         display: "flex",
         flexDirection: "column",
-        justifyContent: "center",
     },
-    listItemText: {
-        color: "primary.main"
-    },
-    icon: {
-        color: "primary.main"
+    listItemButton: {
+        borderRadius: 6,
+        overflow: "hidden",
+        color: "text.secondary",
+        "&.Mui-selected": {
+            backgroundColor: "primary.main",
+            color: "primary.contrastText",
+            "&:hover": {
+                backgroundColor: "primary.light"
+            }
+        }
     }
 });
 
@@ -55,40 +51,40 @@ const SideBar = () => {
     }
 
     return (
-        <Paper sx={classes.root} elevation={1}>
-            <List sx={classes.list}>
-                <ListItem sx={classes.listItem} selected={selected === 0} onClick={()=>handleSelection(0)}>
-                    <ListItemButton sx={classes.listItemButton}>
+        <Paper elevation={1} sx={classes.root}>
+            <List>
+                <ListItem sx={classes.listItem}>
+                    <ListItemButton sx={classes.listItemButton} selected={selected === 0} onClick={()=>handleSelection(0)} >
                         <ForumOutlinedIcon/>
-                        <Typography>Chats</Typography>
                     </ListItemButton>
-                </ListItem>
-                <ListItem sx={classes.listItem} selected={selected === 1} onClick={()=>handleSelection(1)}>
-                    <ListItemButton sx={classes.listItemButton}>
-                        <PeopleAltOutlinedIcon />
-                        <Typography>People</Typography>
-                    </ListItemButton>
-                </ListItem>
-                <ListItem sx={classes.listItem} selected={selected === 2} onClick={()=>handleSelection(2)}>
-                    <ListItemButton sx={classes.listItemButton}>
-                        <ManageAccountsOutlinedIcon />
-                        <Typography>My Profile</Typography>
-                    </ListItemButton>
+                    <Typography variant='caption'>Chats</Typography>
                 </ListItem>
                 <ListItem sx={classes.listItem}>
+                    <ListItemButton sx={classes.listItemButton} selected={selected === 1} onClick={()=>handleSelection(1)}>
+                        <PeopleAltOutlinedIcon />
+                    </ListItemButton>
+                    <Typography variant='caption'>People</Typography>
+                </ListItem>
+                <ListItem sx={classes.listItem}>
+                    <ListItemButton sx={classes.listItemButton} selected={selected === 2} onClick={()=>handleSelection(2)}>
+                        <ManageAccountsOutlinedIcon />
+                    </ListItemButton>
+                    <Typography variant='caption'>Profile</Typography>
+                </ListItem>
+                <ListItem sx={classes.listItem} >
                     <ListItemButton sx={classes.listItemButton} onClick={changeTheme}>
                         <SettingsBrightnessOutlinedIcon />
-                        <ListItemText secondary="Theme" sx={classes.listItemText} />
                     </ListItemButton>
+                    <Typography variant='caption'>Theme</Typography>
                 </ListItem>
             </List>
-            <List sx={classes.list}>
+            <List>
                 <Divider variant="middle" />
-                <ListItem sx={classes.listItem}>
-                        <ListItemButton sx={classes.listItemButton} onClick={logout}>
-                            <LogoutIcon />
-                            <ListItemText secondary="Sign Out" sx={classes.listItemText} />
-                        </ListItemButton>
+                <ListItem sx={classes.listItem} >
+                    <ListItemButton sx={classes.listItemButton} onClick={logout}>
+                        <LogoutIcon />
+                    </ListItemButton>
+                    <Typography variant='caption'>Sign Out</Typography>
                 </ListItem>
             </List>
         </Paper>

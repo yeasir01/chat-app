@@ -7,16 +7,21 @@ import emojis from "../assets/emojis.js";
 
 const useStyles = () => ({
     popover: {
-        
+        borderRadius: 0,
+        overflow: "hidden",
     },
-    emojiWrapper: {
-        width: "300px",
-        height: "200px",
+    wrapper: {
+        width: 200,
+        height: 200,
         display: "flex",
         justifyContent: "space-between",
         flexWrap: "wrap",
-        p: 2,
+        p: 1,
     },
+    button: {
+        width: 48,
+        height: 48,
+    }
 });
 
 const EmojiButton = ({handleSelect}) => {
@@ -55,9 +60,9 @@ const EmojiButton = ({handleSelect}) => {
                 }}
                 sx={classes.popover}
             >
-                <Box sx={classes.emojiWrapper}>
+                <Box sx={classes.wrapper}>
                     {emojis.map(( emoji, idx )=>(
-                        <IconButton key={idx} onClick={(e)=> handleSelect(emoji)}>
+                        <IconButton sx={classes.button} key={idx} onClick={(e)=> handleSelect(emoji)}>
                             {emoji}
                         </IconButton>
                     ))}

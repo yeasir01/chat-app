@@ -1,7 +1,7 @@
 "use strict";
 
 export default (sequelize, DataTypes) => {
-    const Participant = sequelize.define("Participant",
+    const Participant = sequelize.define("participant",
         {
             id: {
                 type: DataTypes.INTEGER,
@@ -9,10 +9,6 @@ export default (sequelize, DataTypes) => {
                 allowNull: false,
                 autoIncrement: true,
             },
-            lastRead: {
-                type: DataTypes.DATE,
-                allowNull: false,
-            }
         },
         {
             timestamps: true,
@@ -20,6 +16,11 @@ export default (sequelize, DataTypes) => {
             paranoid: true,
         }
     );
+
+    Participant.associate = ({User, Chat}) => {
+        Participant.belongsTo(User);
+        Participant.belongsTo(Chat);
+    };
 
     return Participant;
 };

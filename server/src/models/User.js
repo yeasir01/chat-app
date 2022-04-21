@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import config from "../config/environment.js";
 
 export default (sequelize, DataTypes) => {
-    const User = sequelize.define("User",
+    const User = sequelize.define("user",
         {
             id: {
                 type: DataTypes.INTEGER,
@@ -34,7 +34,7 @@ export default (sequelize, DataTypes) => {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
-            image: {
+            avatar: {
                 type: DataTypes.STRING,
                 allowNull: true,
             },
@@ -55,13 +55,27 @@ export default (sequelize, DataTypes) => {
         }
     );
 
+    User.associate = ({Chat, Message, Participant}) => {
+        User.belongsToMany(Chat, {
+            through: Participant
+        });
+        User.hasMany(Message);
+    };
+
     User.prototype.isPassword = async function (password) {
         return await bcrypt.compare(password, this.password);
     };
 
     User.addHook("beforeCreate", async function (user) {
         const hashedPassword = await bcrypt.hash(user.password, config.saltRounds);
-        return (user.password = hashedPassword);
+        user.password = hashedPassword;
+    });
+
+    User.addHook("beforeUpdate", async function (user) {
+        if (user.changed("password")) {
+            const hashedPassword = await bcrypt.hash(user.password, config.saltRounds);
+            user.password = hashedPassword;
+        }
     });
 
     return User;

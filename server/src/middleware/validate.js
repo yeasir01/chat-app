@@ -1,6 +1,6 @@
 "use strict";
 
-import schemaList from "../validation/schema.js";
+import schemaList from "../validation/user-schema.js";
 
 export const validate = (schemaName = "", params=false) => {
     return async (req, res, next) => {

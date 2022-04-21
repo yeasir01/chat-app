@@ -69,7 +69,7 @@ const Register = () => {
         backgroundPosition: 'center',
       }}
       >
-        <Box component={Paper} elevation={6}  square sx={{p:6, m:6, width: "500px"}}>
+        <Box component={Paper} elevation={6} sx={{p:6, m:6, width: "500px", borderRadius: 2}}>
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }} >
             <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
               <HowToRegOutlinedIcon />
@@ -175,7 +175,7 @@ const Register = () => {
                     />
                 </Grid>
               </Grid>
-              <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2, py: 1.5 }} >
+              <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2, py: 1.1 }} >
                 {isLoading ? "Loading..." : "Submit"}
               </Button>
               <Grid container justifyContent="flex-end">

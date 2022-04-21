@@ -1,9 +1,9 @@
 "use strict";
 
 import express from "express";
-import { login, register, updateProfile, logout, getProfile } from "../controller/auth-controller.js";
+import { login, register, updateProfile, logout, getProfile } from "../controller/user-controller.js";
 import { validate } from "../middleware/validate.js";
-import isAuth from "../middleware/authorization.js";
+import checkAuth from "../middleware/authorization.js";
 import passport from "../config/passport.js";
 
 const auth = express.Router();
@@ -18,7 +18,7 @@ auth.route("/authenticate")
     // @route  GET /auth/authenticate
     // @desc   GET - check cookie and return user object.
     // @access Private
-    .get(isAuth, getProfile);
+    .get(checkAuth, getProfile);
 
 auth.route("/register")
     // @route  GET /auth/register
@@ -30,12 +30,12 @@ auth.route("/profile")
     // @route  PUT /auth/register
     // @desc   PUT - update a users profile data.
     // @access Private
-    .put(validate("profile"), isAuth, updateProfile);
+    .put(validate("profile"), checkAuth, updateProfile);
 
 auth.route("/logout")
     // @route  DELETE /auth/logout
     // @desc   DELETE - destroys the current session.
     // @access Private
-    .delete(isAuth, logout);
+    .delete(checkAuth, logout);
 
 export default auth;

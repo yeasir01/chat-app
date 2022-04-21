@@ -1,10 +1,10 @@
 "use strict";
 
-import { User } from "../models/index.js";
+import db from "../models/index.js";
 
 export const register = async (req, res, next) => {
     try {
-        await User.create(req.body);
+        await db.User.create(req.body);
         res.status(201).json({ success: true });
     } catch (err) {
         next(err);
@@ -31,12 +31,12 @@ export const getProfile = (req, res, next) => {
 
 export const updateProfile = async (req, res, next) => {
     try {
-        const user = await User.update(req.body, {
+        const user = await db.User.update(req.body, {
             where: { id: req.user.id },
             returning: true,
         });
 
-        res.status(200).send(user[1]);
+        res.status(200).send(user[0]);
     } catch (err) {
         next(err);
     }

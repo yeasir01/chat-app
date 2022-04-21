@@ -117,7 +117,7 @@ const Login = () => {
                 type="submit"
                 fullWidth
                 variant="contained"
-                sx={{ mt: 1, mb: 2, py: 1.5}}
+                sx={{ mt: 1, mb: 2, py: 1.1}}
               >
                 {isLoading ? "Loading..." : "Submit"}
               </Button>

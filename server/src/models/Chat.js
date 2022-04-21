@@ -1,7 +1,7 @@
 "use strict";
 
 export default (sequelize, DataTypes) => {
-    const Group = sequelize.define("Group",
+    const Chat = sequelize.define("chat",
         {
             id: {
                 type: DataTypes.INTEGER,
@@ -13,21 +13,33 @@ export default (sequelize, DataTypes) => {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
-            image: {
+            avatar: {
                 type: DataTypes.STRING,
                 allowNull: true,
+            },
+            isGroup: {
+                type: DataTypes.BOOLEAN,
+                defaultValue: false
             },
             isPublic: {
                 type: DataTypes.BOOLEAN,
                 defaultValue: false
-            }
+            },
         },
         {
             timestamps: true,
-            tableName: "groups",
+            tableName: "chats",
             paranoid: true,
         }
     );
+    
+    Chat.associate = ({User, Message, Participant}) => {
+        Chat.belongsToMany(User, {
+            through: Participant
+        });
+        
+        Chat.hasMany(Message);
+    };
 
-    return Group;
+    return Chat;
 };
