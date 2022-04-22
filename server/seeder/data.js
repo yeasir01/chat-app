@@ -52,19 +52,16 @@ const users = [
 const chats = [
     {
         id: 1,
-        name: "Dream Team",
+        title: "Dream Team",
         avatar: "https://s.yimg.com/os/creatr-uploaded-images/2022-01/51f760a0-81f5-11ec-a7ee-f09942e600f9",
-        isGroup: true,
     },
     {
         id: 2,
-        name: "",
-        isGroup: false
+        title: "",
     },
     {
         id: 3,
-        name: "",
-        isGroup: false
+        title: "",
     }
 ];
 
@@ -132,13 +129,13 @@ const messages = [
     },
     {
         id: 4,
-        body: "Hello dan 😀",
+        body: "Hi Dan 😀",
         userId: 1,
         chatId: 3
     },
     {
         id: 5,
-        body: "what up mike?",
+        body: "what-up mike?",
         userId: 2,
         chatId: 3
     },

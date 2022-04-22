@@ -43,10 +43,10 @@ export default (sequelize, DataTypes) => {
                 allowNull: false,
                 defaultValue: true,
             },
-            isActive: {
+            isOnline: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,
-                defaultValue: true,
+                defaultValue: false,
             },
         },
         {

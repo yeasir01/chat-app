@@ -1,19 +1,10 @@
 "use strict";
 
-import db from "../models/index.js";
+import { findAllChatByUserId } from "../service/chat-service.js";
 
 export const getChats = async (req, res, next) => {
     try {
-        const chats = await db.User.findAll({
-            where: {
-                id: 2
-            },
-            include: {
-                model: db.Chat,
-                include: db.User
-            }
-        });
-
+        const chats = await findAllChatByUserId(req.user.id);
         res.send(chats);
     } catch (err) {
         next(err);

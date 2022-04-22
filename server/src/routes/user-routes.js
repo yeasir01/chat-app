@@ -6,36 +6,36 @@ import { validate } from "../middleware/validate.js";
 import checkAuth from "../middleware/authorization.js";
 import passport from "../config/passport.js";
 
-const auth = express.Router();
+const user = express.Router();
 
-auth.route("/login")
+user.route("/login")
     // @route  GET /auth/login
     // @desc   GET - check credentials and return a session cookie if auth passes.
     // @access Public
     .post(validate("login"), passport.authenticate("local"), login);
 
-auth.route("/authenticate")
-    // @route  GET /auth/authenticate
+user.route("/authenticate")
+    // @route  GET /api/auth/authenticate
     // @desc   GET - check cookie and return user object.
     // @access Private
     .get(checkAuth, getProfile);
 
-auth.route("/register")
-    // @route  GET /auth/register
+user.route("/register")
+    // @route  GET /api/auth/register
     // @desc   GET - insert a new user into the database
     // @access Public
     .post(validate("register"), register);
 
-auth.route("/profile")
-    // @route  PUT /auth/register
+user.route("/profile")
+    // @route  PUT /api/auth/register
     // @desc   PUT - update a users profile data.
     // @access Private
     .put(validate("profile"), checkAuth, updateProfile);
 
-auth.route("/logout")
+user.route("/logout")
     // @route  DELETE /auth/logout
     // @desc   DELETE - destroys the current session.
     // @access Private
     .delete(checkAuth, logout);
 
-export default auth;
+export default user;

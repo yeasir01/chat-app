@@ -26,7 +26,7 @@ const isUniqueHandle = async (handle) => {
     const account = await db.User.findOne({
         where: { handle },
     });
-
+    
     if (account) {
         throw {
             details: [

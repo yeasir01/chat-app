@@ -5,9 +5,9 @@ import checkAuth from "../middleware/authorization.js";
 const chat = express.Router();
 
 chat.route("/")
-    // @route  GET /chats
-    // @desc   GET - check credentials and return a session cookie if auth passes.
-    // @access Public
-    .get(/* checkAuth,  */getChats);
+    // @route  GET /api/chats
+    // @desc   GET - get chats based on userId in request object.
+    // @access Private
+    .get(checkAuth, getChats);
 
 export default chat;

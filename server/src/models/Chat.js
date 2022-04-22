@@ -9,17 +9,13 @@ export default (sequelize, DataTypes) => {
                 allowNull: false,
                 autoIncrement: true,
             },
-            name: {
+            title: {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
             avatar: {
                 type: DataTypes.STRING,
                 allowNull: true,
-            },
-            isGroup: {
-                type: DataTypes.BOOLEAN,
-                defaultValue: false
             },
             isPublic: {
                 type: DataTypes.BOOLEAN,
