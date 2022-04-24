@@ -3,35 +3,47 @@
 import db from "../models/index.js";
 import { Op } from "sequelize";
 
-const findAllChatByUserId = async (userId) => {
-    
+const findAllChatsByUserId = async (userId) => {
     const chats = await db.User.findAll({
-        attributes: ["id", "handle"],
+        attributes: [],
+        required: true,
         where: {
             id: userId,
         },
         include: {
             model: db.Chat,
-            attributes: ["id", "title", "avatar", "createdAt"],
+            attributes: ["id", "title", "avatar", "isGroup" , "createdAt"],
             through: {
                 attributes: [],
             },
-            include: {
-                model: db.User,
-                where: {
-                    [Op.not]: {
-                        id: userId
-                    }
+            include: [
+                {
+                    model: db.User,
+                    where: {
+                        [Op.not]: {
+                            id: userId,
+                        },
+                    },
+                    attributes: [ "id", "firstName", "lastName", "avatar", "isOnline", "handle" ],
+                    through: {
+                        attributes: [],
+                    },
                 },
-                attributes: ["id", "firstName", "lastName", "avatar", "isOnline", "handle"],
-                through: {
-                    attributes: [],
-                }
-            }
+                {
+                    model: db.Message,
+                    attributes: ["body", "updatedAt", "userId"],
+                    order: [["updatedAt", "DESC"]],
+                    limit: 1,
+                    include: {
+                        model: db.User,
+                        attributes: ["id","firstName", "lastName", "handle"],
+                    },
+                },
+            ],
         },
     });
-
-    return chats;
+    
+    return chats[0];
 };
 
-export { findAllChatByUserId };
+export { findAllChatsByUserId };

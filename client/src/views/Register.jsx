@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { useFetch } from "../hooks/useFetch.jsx";
+import useFetch from "../hooks/useFetch.jsx";
 import useAuth from "../hooks/useAuth.jsx";
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -19,7 +19,7 @@ import background from '../assets/images/bg.svg';
 
 const Register = () => {
   const { auth } = useAuth();
-  const { response, error, isLoading, request } = useFetch();
+  const [ response, error, isLoading, request ] = useFetch();
   const [formData, setFormData] = React.useState({
       firstName: "",
       lastName: "",

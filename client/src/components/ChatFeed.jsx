@@ -11,8 +11,9 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Divider from '@mui/material/Divider';
 import ChatFeedBubbles from "./ChatFeedBubbles.jsx";
 import ListItemText from "@mui/material/ListItemText";
-import mockChats from "../mock/messages";
 import EmojiButton from "./EmojiButton.jsx";
+import LoaderBoundary from "./LoaderBoundary.jsx";
+import useFetch from "../hooks/useFetch.jsx";
 
 const useStyles = () => ({
     root: {
@@ -54,12 +55,23 @@ const keyPress = {
     Enter: false
 }
 
-const ChatFeed = ({groupDetails}) => {
-    const [messages, setMessages] = React.useState(mockChats);
+const ChatFeed = (props) => {
+    const [messages, setMessages] = React.useState([]);
     const [input, setInput] = React.useState("");
+    const [response, error, isLoading, request] = useFetch();    
     
     const isNotEmpty = Boolean(input.trim());
     const classes = useStyles();
+
+    React.useEffect(() => {
+        if(response?.ok){
+            setMessages(response.data)
+        }
+    },[response])
+
+    React.useEffect(()=>{
+        request.get(`/api/messages?chatId=${props.details.id}`)
+    },[props.details.id])
 
     const sendMessage = () => {
         if (isNotEmpty) {
@@ -105,8 +117,8 @@ const ChatFeed = ({groupDetails}) => {
             <Grid container direction="column" height={1}>
                 <Grid item sx={classes.headerGroup}>
                     <Box sx={classes.headerItem}>
-                        <Avatar sx={classes.avatar} src={groupDetails.img} />
-                        <ListItemText primary={groupDetails.groupName} secondary="ricky1987" />
+                        <Avatar sx={classes.avatar} src={props.details.avatar} />
+                        <ListItemText primary={props.details.displayName}/>
                     </Box>
                     <Box>
                         <IconButton>
@@ -118,7 +130,9 @@ const ChatFeed = ({groupDetails}) => {
                     <Divider />
                 </Grid>
                 <Grid item xs padding={4} sx={{overflowY: "auto"}}>
-                    <ChatFeedBubbles messages={messages} />
+                    <LoaderBoundary loading={isLoading}>
+                        <ChatFeedBubbles messages={messages} />
+                    </LoaderBoundary>
                 </Grid>
                 <Grid item>
                     <Divider />

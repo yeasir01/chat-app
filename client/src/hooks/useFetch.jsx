@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
-export const useFetch = (URL = "", OPTIONS = {}) => {
+const useFetch = (URL = "", OPTIONS = {}) => {
     const [response, setResponse] = useState(null);
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -32,14 +32,14 @@ export const useFetch = (URL = "", OPTIONS = {}) => {
     };
 
     const request = {
-        get(url = "", opt = {}) {
+        get: useCallback((url = "", opt = {}) => {
             setUrl(url);
             setOption({
                 ...commonHeaders,
                 ...opt,
                 method: "GET",
             });
-        },
+        },[commonHeaders]),
         post(url = "", data = {}, opt = {}) {
             setUrl(url);
             setOption({
@@ -68,7 +68,6 @@ export const useFetch = (URL = "", OPTIONS = {}) => {
         },
     };
 
-    
     useEffect(() => {
         if (!url) return;
 
@@ -108,5 +107,8 @@ export const useFetch = (URL = "", OPTIONS = {}) => {
         return () => controller.abort();
     }, [url, option]);
 
-    return { response, error, isLoading, request };
+    return [response, error, isLoading, request];
+
 };
+
+export default useFetch;

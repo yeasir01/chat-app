@@ -8,6 +8,7 @@ import helmet from "helmet";
 import config from "./config/environment.js";
 import userRoutes from "./routes/user-routes.js";
 import chatRoutes from "./routes/chat-routes.js";
+import messageRoutes from "./routes/message-route.js";
 import errorHandler from "./middleware/error-handler.js";
 import db from "./models/index.js";
 import { Server } from "socket.io";
@@ -36,6 +37,7 @@ app.use(compression());
 
 app.use("/api/auth", userRoutes);
 app.use("/api/chats", chatRoutes);
+app.use("/api/messages", messageRoutes);
 
 // convert a connect middleware to a Socket.IO middleware
 const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);

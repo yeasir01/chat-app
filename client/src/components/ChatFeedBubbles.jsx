@@ -1,41 +1,49 @@
 import React from "react";
-import Paper from "@mui/material/Paper";
+import Box from "@mui/system/Box";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
-import Tooltip from '@mui/material/Tooltip';
+import useAuth from "../hooks/useAuth.jsx";
+import Avatar from '@mui/material/Avatar';
+import { getInitials } from "../util/helpers.js";
 
-const ChatFeedBubbles = ({messages}) => {
-    const user = { id: 1 };
+const ChatFeedBubbles = (props) => {
+    const { auth } = useAuth();
 
     const lastMessageRef = React.useRef(null);
 
     React.useEffect(() => {
         lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
-    }, [messages]);
+    }, [props.messages]);
 
     const styles = (isOwner) => ({
+        wrapper: {
+            display: "flex",
+            flexDirection: isOwner ? "row-reverse" : "row",
+            alignItems: "flex-end",
+            gap: 1.25
+        },
         bubble: {
-            backgroundColor: isOwner ? "primary.main" : "secondary.main",
-            color: isOwner ? "primary.contrastText": "secondary.contrastText",
-            cursor: "pointer",
-            borderRadius: isOwner ? "20px 20px 0 20px": "20px 20px 20px 0",
+            position: "relative",
+            backgroundColor: isOwner ? "primary.main" : "background.default",
+            color: isOwner ? "primary.contrastText": "text.primary",
+            borderRadius: isOwner ? "20px 20px 3px 20px": "20px 20px 20px 3px",
             px: 2,
-            py: 1,
+            py: 1,        
         },
-        toolTipTitle: {
-            textAlign: isOwner ? "right" : "left",
-        },
-        toolTipBody: {
-            textAlign: isOwner ? "right" : "left"
-        },
+        date: {
+            fontSize: ".7rem"
+        }
     });
 
     return (
         <>
-            {messages.map((message) => {
-                const isMessageOwner = user.id === message.userID;
-                const uniqueKey = message.id + message.createdAt;
+            {props.messages.map((message) => {
+                const isOwner = auth.user.id === message.user.id;
                 const date = new Date(parseInt(message.createdAt));
+                const firstName = message.user.firstName || "";
+                const lastName = message.user.lastName || "";
+                const avatar = message.user.avatar || "";
+                const initials = isOwner ? "ME" : getInitials(firstName, lastName);
                 const time = date.toLocaleTimeString([], {
                     year: 'numeric', 
                     month: 'numeric', 
@@ -43,24 +51,21 @@ const ChatFeedBubbles = ({messages}) => {
                     hour: '2-digit', 
                     minute: '2-digit'
                 });
-                
-                const classes = styles(isMessageOwner);
+
+                const classes = styles(isOwner);
                 
                 return (
-                    <Grid container width={1} justifyContent={isMessageOwner ? "flex-end" : "flex-start"} key={uniqueKey}>
+                    <Grid container width={1} justifyContent={isOwner ? "flex-end" : "flex-start"} key={message.id}>
                         <Grid item sx={{maxWidth: 0.5, my: 1}}>
-                               <Tooltip
-                                placement={isMessageOwner ? "left" : "right"}
-                                title={
-                                        <>
-                                            <Typography variant="subtitle2" sx={classes.toolTipTitle}>{message.handle}</Typography>
-                                            <Typography variant="caption" sx={classes.toolTipBody}>{time}</Typography>                            
-                                        </>
-                                } arrow >
-                                    <Paper elevation={0} sx={classes.bubble}>
-                                        <Typography variant="body1" sx={{whiteSpace: 'pre-line'}}>{message.body}</Typography>
-                                    </Paper>
-                                </Tooltip>
+                            <Box sx={classes.wrapper}>
+                                <Avatar sx={{ width: 35, height: 35, fontSize: "1rem" }} src={avatar}>
+                                    {initials}
+                                </Avatar>
+                                <Box sx={classes.bubble}>
+                                    <Typography variant="body1" sx={{whiteSpace: 'pre-line'}}>{message.body}</Typography>
+                                </Box>
+                                {/* <Typography variant="caption" sx={classes.date}>{time}</Typography> */}                       
+                            </Box>
                         </Grid>
                     </Grid>
                 );

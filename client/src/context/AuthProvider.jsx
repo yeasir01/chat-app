@@ -1,18 +1,24 @@
 import { createContext, useState } from "react";
-import { useFetch } from "../hooks/useFetch.jsx";
+import useFetch from "../hooks/useFetch.jsx";
 
 const AuthContext = createContext({});
 
+const initialState = {
+    user: {
+        email: "",
+        handle: "",
+        id: 1,
+    },
+    isAuthenticated: true,
+};
+
 export const AuthProvider = ({ children }) => {
-    const [auth, setAuth] = useState({ user: null, isAuthenticated: true });
-    const { request } = useFetch();
+    const [auth, setAuth] = useState(initialState);
+    const [response, error, isLoading, request] = useFetch();
 
     const logout = () => {
         request.delete("/api/auth/logout");
-        setAuth({
-            isAuthenticated: false,
-            user: null
-        })
+        setAuth(initialState);
     };
 
     return (

@@ -7,7 +7,6 @@ import emojis from "../assets/emojis.js";
 
 const useStyles = () => ({
     popover: {
-        borderRadius: 0,
         overflow: "hidden",
     },
     wrapper: {

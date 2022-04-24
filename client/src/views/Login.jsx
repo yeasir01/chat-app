@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Link as RouterLink, useNavigate, useLocation } from "react-router-dom";
-import { useFetch } from '../hooks/useFetch.jsx';
+import useFetch from '../hooks/useFetch.jsx';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -20,7 +20,7 @@ import background from '../assets/images/bg.svg';
 
 const Login = () => {
   const { auth, setAuth } = useAuth();
-  const { response, error, isLoading, request } = useFetch();
+  const [ response, error, isLoading, request ] = useFetch();
   const [formData, setFormData] = React.useState({
     email: "",
     password: "",

@@ -54,6 +54,7 @@ const chats = [
         id: 1,
         title: "Dream Team",
         avatar: "https://s.yimg.com/os/creatr-uploaded-images/2022-01/51f760a0-81f5-11ec-a7ee-f09942e600f9",
+        isGroup: true
     },
     {
         id: 2,
@@ -129,7 +130,7 @@ const messages = [
     },
     {
         id: 4,
-        body: "Hi Dan 😀",
+        body: "Hi John 😀",
         userId: 1,
         chatId: 3
     },
