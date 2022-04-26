@@ -1,19 +1,27 @@
 import { useEffect, useState, useCallback } from "react";
 
-const useFetch = (URL = "", OPTIONS = {}) => {
-    const [response, setResponse] = useState(null);
+const defaultOptions = {
+    method: "GET",
+    headers: {
+        "Content-Type": "application/json; charset=UTF-8",
+    },
+    body: undefined,
+};
+
+const useFetch = (URL = "", OPTIONS = { ...defaultOptions }, DATA = []) => {
+    const [response, setResponse] = useState({
+        ok: false,
+        data: DATA,
+        status: undefined,
+        statusText: undefined,
+        headers: {},
+    });
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [url, setUrl] = useState(URL);
-    const [option, setOption] = useState(OPTIONS);
+    const [option, setOption] = useState({...defaultOptions, ...OPTIONS});
 
-    const commonHeaders = {
-        headers: {
-            "Content-Type": "application/json; charset=UTF-8",
-        },
-    };
-
-    const stringifyData = (data) => {
+    const stringifyData = useCallback((data) => {
         const isFormData = data instanceof FormData;
 
         if (isFormData) {
@@ -21,52 +29,27 @@ const useFetch = (URL = "", OPTIONS = {}) => {
         }
 
         return JSON.stringify(data);
-    };
+    }, []);
 
-    const parseToJSON = (data) => {
+    const parseToJSON = useCallback((data) => {
         try {
             return JSON.parse(data);
         } catch (_) {
             return data;
         }
-    };
+    }, []);
 
-    const request = {
-        get: useCallback((url = "", opt = {}) => {
+    const request = useCallback(
+        (url = "", options = { ...defaultOptions }) => {
             setUrl(url);
             setOption({
-                ...commonHeaders,
-                ...opt,
-                method: "GET",
-            });
-        },[commonHeaders]),
-        post(url = "", data = {}, opt = {}) {
-            setUrl(url);
-            setOption({
-                ...commonHeaders,
-                ...opt,
-                method: "POST",
-                body: stringifyData(data),
+                ...defaultOptions,
+                ...options,
+                body: stringifyData(options.body),
             });
         },
-        put(url = "", data = {}, opt = {}) {
-            setUrl(url);
-            setOption({
-                ...commonHeaders,
-                ...opt,
-                method: "PUT",
-                body: stringifyData(data),
-            });
-        },
-        delete(url = "", opt = {}) {
-            setUrl(url);
-            setOption({
-                ...commonHeaders,
-                ...opt,
-                method: "DELETE",
-            });
-        },
-    };
+        [stringifyData]
+    );
 
     useEffect(() => {
         if (!url) return;
@@ -74,7 +57,7 @@ const useFetch = (URL = "", OPTIONS = {}) => {
         const controller = new AbortController();
         const signal = controller.signal;
 
-        async function callAPI() {
+        async function fetchData() {
             try {
                 setIsLoading(true);
                 setResponse(null);
@@ -88,27 +71,34 @@ const useFetch = (URL = "", OPTIONS = {}) => {
                     statusText: res.statusText,
                     headers: option?.headers || {},
                 };
+                if (signal.aborted) return;
                 res.ok ? setResponse(data) : setError(data);
             } catch (err) {
+                if (signal.aborted) return;
                 setError({
                     ok: false,
                     data: err.message,
                     status: 400,
                     statusText: "Bad Request",
-                    headers: option?.headers || {},
+                    headers: option.headers || {},
                 });
             } finally {
+                if (signal.aborted) return;
                 setIsLoading(false);
             }
         }
 
-        callAPI();
+        fetchData();
 
         return () => controller.abort();
-    }, [url, option]);
+    }, [url, option, parseToJSON]);
 
-    return [response, error, isLoading, request];
-
+    return {
+        response,
+        error,
+        isLoading,
+        request,
+    };
 };
 
 export default useFetch;

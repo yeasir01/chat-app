@@ -32,14 +32,14 @@ const useStyles = () => ({
     },
 });
 
-const ChatListContainer = ({ setConversation, activeConversation }) => {
-    const [response, error, isLoading] = useFetch("/api/chats");
-    const [chatList, setChatList] = React.useState([]);
+const ChatListContainer = (props) => {
+    const [chats, setChats] = React.useState([]);
+    const { response, error, isLoading } = useFetch("/api/chats");
     const { auth } = useAuth();
 
     React.useEffect(() => {
         if (response?.ok) {
-            setChatList(response.data.chats);
+            setChats(response.data.chats);
         }
     }, [response]);
 
@@ -57,31 +57,32 @@ const ChatListContainer = ({ setConversation, activeConversation }) => {
                 <Grid item xs sx={{ overflowY: "auto" }}>
                     <LoaderBoundary loading={isLoading}>
                         <List disablePadding>
-                            {chatList.map((item, idx) => {
-                                const isMe = item.messages[0].user.id === auth.user.id;
-                                const isGroup = item.isGroup;
-                                const groupName = item.title || "";
-                                const avatar = isGroup ? item.avatar : item.users[0].avatar;
-                                const lastMessage = item.messages[0].body || "";
-                                const lastMessageUser = item.messages[0].user.firstName || "";
-                                const firstName = item.users[0].firstName || "";
-                                const lastName = item.users[0].lastName || "";
+                            {chats.map((chat, idx) => {
+                                const isMe = chat.messages[0].user.id === auth.user.id;
+                                const isGroup = chat.isGroup;
+                                const groupName = chat.title || "";
+                                const avatar = isGroup ? chat.avatar : chat.users[0].avatar;
+                                const lastMessage = chat.messages[0].body || "";
+                                const lastMessageUser = chat.messages[0].user.firstName || "";
+                                const firstName = chat.users[0].firstName || "";
+                                const lastName = chat.users[0].lastName || "";
                                 const personsName = firstName + " " + lastName;
                                 const displayName = isGroup ? groupName : personsName;
-                                const messageDisplay = (isMe ? "Me" : lastMessageUser) + ": " + lastMessage;
+                                const lastMsgDisplay = (isMe ? "Me" : lastMessageUser) + ": " + lastMessage;
                                 const animationDelay = 300 * (idx + 1);
-                                const isOnline = isGroup ? false : item.users[0].isOnline;
+                                const isOnline = isGroup ? false : chat.users[0].isOnline;
                                 
                                 return (
-                                    <Fade in timeout={animationDelay} key={item.id}>
+                                    <Fade in timeout={animationDelay} key={chat.id}>
                                         <ListItemButton
                                             divider
-                                            selected={activeConversation === item.id}
+                                            selected={props.activeChat === chat.id}
                                             onClick={() => {
-                                                setConversation({
-                                                    id: item.id,
-                                                    avatar,
-                                                    displayName
+                                                props.setActiveChat({
+                                                    id: chat.id,
+                                                    avatar: avatar,
+                                                    title: displayName,
+                                                    isGroup: isGroup
                                                 })
                                             }}
                                         >
@@ -93,7 +94,7 @@ const ChatListContainer = ({ setConversation, activeConversation }) => {
                                             <ListItemText
                                                 primary={displayName}
                                                 primaryTypographyProps={classes.primaryText}
-                                                secondary={truncate(messageDisplay, 40)}
+                                                secondary={truncate(lastMsgDisplay, 40)}
                                                 secondaryTypographyProps={classes.secondaryText}
                                             />
                                         </ListItemButton>

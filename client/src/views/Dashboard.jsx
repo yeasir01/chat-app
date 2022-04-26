@@ -24,11 +24,10 @@ const useStyles = ()=>({
 })
 
 const DashboardView = () => {
-    const [activeConversation, setActiveConversation] = React.useState(null);
-    const [messages, setMessages] = React.useState([]);
+    const [activeChat, setActiveChat] = React.useState(null);
 
     const classes = useStyles();
-    const isActive = Boolean(activeConversation);
+    const isActive = Boolean(activeChat);
 
     return (
         <Grid container sx={classes.root}>
@@ -37,12 +36,12 @@ const DashboardView = () => {
             </Grid>
             <Grid item sx={classes.list}>
                 <ChatList 
-                    setConversation={setActiveConversation} 
-                    activeConversation={activeConversation} 
+                    setActiveChat={setActiveChat} 
+                    activeChat={activeChat} 
                 />
             </Grid>
             <Grid item xs sx={classes.chatFeed}>
-                {isActive ? <ChatFeed details={activeConversation} /> : <NoChatSelected />}
+                {isActive ? <ChatFeed activeChat={activeChat} /> : <NoChatSelected />}
             </Grid>
         </Grid>
     );

@@ -5,10 +5,10 @@ import Paper from "@mui/material/Paper";
 import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
-import SendOutlinedIcon from '@mui/icons-material/SendOutlined';
-import TextField from '@mui/material/TextField';
-import InputAdornment from '@mui/material/InputAdornment';
-import Divider from '@mui/material/Divider';
+import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import Divider from "@mui/material/Divider";
 import ChatFeedBubbles from "./ChatFeedBubbles.jsx";
 import ListItemText from "@mui/material/ListItemText";
 import EmojiButton from "./EmojiButton.jsx";
@@ -19,7 +19,7 @@ const useStyles = () => ({
     root: {
         height: 1,
         borderRadius: 2,
-        overflow: "hidden"
+        overflow: "hidden",
     },
     headerGroup: {
         display: "flex",
@@ -34,7 +34,7 @@ const useStyles = () => ({
         gap: 1.5,
     },
     title: {
-        p:0
+        p: 0,
     },
     input: {
         py: 2,
@@ -46,32 +46,32 @@ const useStyles = () => ({
     },
     avatar: {
         height: 45,
-        width: 45
+        width: 45,
     },
 });
 
 const keyPress = {
     Shift: false,
-    Enter: false
-}
+    Enter: false,
+};
 
 const ChatFeed = (props) => {
     const [messages, setMessages] = React.useState([]);
     const [input, setInput] = React.useState("");
-    const [response, error, isLoading, request] = useFetch();    
-    
+    const { response, error, isLoading, request } = useFetch();
+
     const isNotEmpty = Boolean(input.trim());
     const classes = useStyles();
 
     React.useEffect(() => {
-        if(response?.ok){
-            setMessages(response.data)
-        }
-    },[response])
+        request(`/api/messages?chatId=${props.activeChat.id}`);
+    }, [props.activeChat.id, request]);
 
-    React.useEffect(()=>{
-        request.get(`/api/messages?chatId=${props.details.id}`)
-    },[props.details.id])
+    React.useEffect(() => {
+        if (response?.ok) {
+            setMessages(response.data);
+        }
+    }, [response]);
 
     const sendMessage = () => {
         if (isNotEmpty) {
@@ -80,12 +80,16 @@ const ChatFeed = (props) => {
                 body: input,
                 createdAt: Date.now(),
                 handle: "yeasir01",
-                userID: 1
-            }
-            setMessages(prevMessages => [...prevMessages, newMessage]);
+                user: {
+                    firstName: "mike",
+                    lastName: "some",
+                    id: 1,
+                },
+            };
+            setMessages((prevMessages) => [...prevMessages, newMessage]);
             setInput("");
         }
-    }
+    };
 
     const handleKeyDown = (event) => {
         if (event.key === "Shift" || event.key === "Enter") {
@@ -96,29 +100,32 @@ const ChatFeed = (props) => {
             event.preventDefault();
             sendMessage();
         }
-    }
+    };
 
     const handleKeyUp = (event) => {
-        if (event.key === "Shift" || event.key === "Enter"){
+        if (event.key === "Shift" || event.key === "Enter") {
             keyPress[event.key] = false;
         }
-    }
+    };
 
     const handleInputChange = (event) => {
-        setInput(event.target.value)
-    }
+        setInput(event.target.value);
+    };
 
     const handleEmojiSelection = (emoji) => {
-        setInput(prev => prev + emoji);
-    }
+        setInput((prev) => prev + emoji);
+    };
 
     return (
         <Paper elevation={1} sx={classes.root}>
             <Grid container direction="column" height={1}>
                 <Grid item sx={classes.headerGroup}>
                     <Box sx={classes.headerItem}>
-                        <Avatar sx={classes.avatar} src={props.details.avatar} />
-                        <ListItemText primary={props.details.displayName}/>
+                        <Avatar
+                            sx={classes.avatar}
+                            src={props.activeChat.avatar}
+                        />
+                        <ListItemText primary={props.activeChat.title} />
                     </Box>
                     <Box>
                         <IconButton>
@@ -129,7 +136,7 @@ const ChatFeed = (props) => {
                 <Grid item>
                     <Divider />
                 </Grid>
-                <Grid item xs padding={4} sx={{overflowY: "auto"}}>
+                <Grid item xs padding={4} sx={{ overflowY: "auto" }}>
                     <LoaderBoundary loading={isLoading}>
                         <ChatFeedBubbles messages={messages} />
                     </LoaderBoundary>
@@ -147,7 +154,7 @@ const ChatFeed = (props) => {
                         gap={1}
                     >
                         <Grid item>
-                            <EmojiButton handleSelect={handleEmojiSelection}/>
+                            <EmojiButton handleSelect={handleEmojiSelection} />
                         </Grid>
                         <Grid item xs>
                             <TextField
@@ -162,7 +169,7 @@ const ChatFeed = (props) => {
                                 multiline
                                 maxRows={4}
                                 InputProps={{
-                                    sx: {pl: 3},
+                                    sx: { pl: 3 },
                                     endAdornment: (
                                         <InputAdornment position="end">
                                             <IconButton onClick={sendMessage}>

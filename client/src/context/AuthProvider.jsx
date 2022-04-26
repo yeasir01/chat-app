@@ -1,29 +1,38 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect } from "react";
 import useFetch from "../hooks/useFetch.jsx";
 
 const AuthContext = createContext({});
 
-const initialState = {
+const initAuthState = {
     user: {
         email: "",
         handle: "",
-        id: 1,
+        id: null,
     },
-    isAuthenticated: true,
+    isAuthenticated: false,
 };
 
-export const AuthProvider = ({ children }) => {
-    const [auth, setAuth] = useState(initialState);
-    const [response, error, isLoading, request] = useFetch();
+export const AuthProvider = (props) => {
+    const [auth, setAuth] = useState(initAuthState);
+    const { response, request } = useFetch("/api/auth/authenticate", { credentials: "include" });
+
+    useEffect(() => {
+        if (response?.data?.user) {
+            setAuth({ user: response.data.user, isAuthenticated: true });
+        }
+    }, [response]);
 
     const logout = () => {
-        request.delete("/api/auth/logout");
-        setAuth(initialState);
+        request("/api/auth/logout", {
+            method: "DELETE",
+            credentials: "include",
+        });
+        setAuth(initAuthState);
     };
 
     return (
         <AuthContext.Provider value={{ auth, setAuth, logout }}>
-            {children}
+            {props.children}
         </AuthContext.Provider>
     );
 };

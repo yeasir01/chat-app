@@ -4,7 +4,7 @@ import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import useAuth from "../hooks/useAuth.jsx";
 import Avatar from '@mui/material/Avatar';
-import { getInitials } from "../util/helpers.js";
+import { getInitials, convertTime } from "../util/helpers.js";
 
 const ChatFeedBubbles = (props) => {
     const { auth } = useAuth();
@@ -20,7 +20,7 @@ const ChatFeedBubbles = (props) => {
             display: "flex",
             flexDirection: isOwner ? "row-reverse" : "row",
             alignItems: "flex-end",
-            gap: 1.25
+            gap: 1
         },
         bubble: {
             position: "relative",
@@ -39,18 +39,11 @@ const ChatFeedBubbles = (props) => {
         <>
             {props.messages.map((message) => {
                 const isOwner = auth.user.id === message.user.id;
-                const date = new Date(parseInt(message.createdAt));
                 const firstName = message.user.firstName || "";
                 const lastName = message.user.lastName || "";
                 const avatar = message.user.avatar || "";
                 const initials = isOwner ? "ME" : getInitials(firstName, lastName);
-                const time = date.toLocaleTimeString([], {
-                    year: 'numeric', 
-                    month: 'numeric', 
-                    day: 'numeric', 
-                    hour: '2-digit', 
-                    minute: '2-digit'
-                });
+                const time = convertTime(message.createdAt)
 
                 const classes = styles(isOwner);
                 
