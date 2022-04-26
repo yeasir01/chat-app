@@ -1,11 +1,8 @@
 "use strict";
 
-import schemaList from "../validation/user-schema.js";
-
-export const validate = (schemaName = "", params=false) => {
+ const validate = (schema, params=false) => {
     return async (req, res, next) => {
         try {
-            const schema = schemaList[schemaName];
             const reqType = req[params ? "params" : "body"];
             await schema.validateAsync(reqType, { abortEarly: false });
             next();
@@ -24,3 +21,5 @@ export const validate = (schemaName = "", params=false) => {
         }
     };
 };
+
+export default validate;
