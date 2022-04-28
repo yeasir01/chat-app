@@ -11,7 +11,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import Divider from "@mui/material/Divider";
 import ChatFeedBubbles from "./ChatFeedBubbles.jsx";
 import ListItemText from "@mui/material/ListItemText";
-import EmojiButton from "./EmojiButton.jsx";
+import EmojiComponent from "./EmojiComponent.jsx";
 import LoaderBoundary from "./LoaderBoundary.jsx";
 import useFetch from "../hooks/useFetch.jsx";
 
@@ -58,37 +58,34 @@ const keyPress = {
 const ChatFeed = (props) => {
     const [messages, setMessages] = React.useState([]);
     const [input, setInput] = React.useState("");
-    const { response, error, isLoading, request } = useFetch();
+    const { response: fetchResponse, error: fetchError, isLoading: fetchLoading, request: fetchRequest } = useFetch();
+    const {response: postResponse, error: postError, isLoading: postLoading, request: postRequest} = useFetch();
 
     const isNotEmpty = Boolean(input.trim());
     const classes = useStyles();
 
     React.useEffect(() => {
-        request(`/api/messages?chatId=${props.activeChat.id}`);
-    }, [props.activeChat.id, request]);
+        fetchRequest(`/api/messages?chatId=${props.activeChat.id}`);
+    }, [props.activeChat.id, fetchRequest]);
 
     React.useEffect(() => {
-        if (response?.ok) {
-            setMessages(response.data);
+        if (fetchResponse?.ok) {
+            setMessages(fetchResponse.data);
         }
-    }, [response]);
+    }, [fetchResponse]);
+
+    React.useEffect(()=>{
+        if (postResponse?.ok) {
+            setMessages(prevMsg => [...prevMsg, postResponse.data])
+        }
+    },[postResponse])
 
     const sendMessage = () => {
         if (isNotEmpty) {
-            const newMessage = {
-                id: 121,
-                body: input,
-                createdAt: Date.now(),
-                handle: "yeasir01",
-                user: {
-                    firstName: "mike",
-                    lastName: "some",
-                    id: 1,
-                },
-            };
-            setMessages((prevMessages) => [...prevMessages, newMessage]);
+            props.socket.emit("message:create", { chatId: props.activeChat.id, message: input })
             setInput("");
         }
+
     };
 
     const handleKeyDown = (event) => {
@@ -112,9 +109,9 @@ const ChatFeed = (props) => {
         setInput(event.target.value);
     };
 
-    const handleEmojiSelection = (emoji) => {
+    const handleEmojiSelection = React.useCallback((emoji) => {
         setInput((prev) => prev + emoji);
-    };
+    }, []);
 
     return (
         <Paper elevation={1} sx={classes.root}>
@@ -137,7 +134,7 @@ const ChatFeed = (props) => {
                     <Divider />
                 </Grid>
                 <Grid item xs padding={4} sx={{ overflowY: "auto" }}>
-                    <LoaderBoundary loading={isLoading}>
+                    <LoaderBoundary loading={fetchLoading}>
                         <ChatFeedBubbles messages={messages} />
                     </LoaderBoundary>
                 </Grid>
@@ -154,7 +151,7 @@ const ChatFeed = (props) => {
                         gap={1}
                     >
                         <Grid item>
-                            <EmojiButton handleSelect={handleEmojiSelection} />
+                            <EmojiComponent handleSelect={handleEmojiSelection} />
                         </Grid>
                         <Grid item xs>
                             <TextField

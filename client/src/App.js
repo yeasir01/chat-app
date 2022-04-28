@@ -2,7 +2,7 @@ import React from "react";
 import Login from "./views/Login.jsx";
 import Register from "./views/Register.jsx";
 import NoMatch from "./views/NotFound.jsx";
-import Dashboard from "./views/Dashboard.jsx";
+import Chats from "./views/Chats.jsx";
 import HomePage from "./views/Home.jsx";
 import RequireAuth from "./components/RequireAuth.jsx";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -21,7 +21,7 @@ const App = () => {
                         <Route path="/login" exact element={<Login />} />
                         <Route path="/register" exact element={<Register />} />
                         <Route element={<RequireAuth />}>
-                            <Route path="/app" element={<Dashboard />} />
+                            <Route path="/chats" element={<Chats />} />
                         </Route>
                         <Route path="*" element={<NoMatch />} />
                     </Routes>

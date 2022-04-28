@@ -71,4 +71,4 @@ const EmojiButton = ({handleSelect}) => {
     );
 };
 
-export default EmojiButton;
+export default React.memo(EmojiButton);

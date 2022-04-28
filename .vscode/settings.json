@@ -6,6 +6,7 @@
         "PGPASSWORD",
         "PGUSER",
         "resave",
+        "sequalize",
         "UUIDV"
     ],
     "liveSassCompile.settings.excludeList": [

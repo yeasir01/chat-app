@@ -10,7 +10,7 @@ const HomePage = () => {
       <Link to="/login">Login Page</Link>
       <br />
       <br />
-      <Link to="/app">Dashboard Page</Link>
+      <Link to="/chats">Dashboard Page</Link>
     </>
   )
 }

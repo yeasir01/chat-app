@@ -11,9 +11,10 @@ import chatRoutes from "./routes/chat-routes.js";
 import messageRoutes from "./routes/message-route.js";
 import errorHandler from "./middleware/error-handler.js";
 import db from "./models/index.js";
-import { Server } from "socket.io";
 import passport  from "./config/passport.js";
 import session from "express-session";
+import { Server } from "socket.io";
+import { socketEventHandler, wrap } from "./socket/index.js";
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -38,9 +39,7 @@ app.use(compression());
 app.use("/api/auth", userRoutes);
 app.use("/api/chats", chatRoutes);
 app.use("/api/messages", messageRoutes);
-
-// convert a connect middleware to a Socket.IO middleware
-const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
+app.use(errorHandler);
 
 io.use(wrap(sessionMiddleware));
 io.use(wrap(passport.initialize()));
@@ -54,20 +53,15 @@ io.use((socket, next) => {
   }
 });
 
-io.on("connection", (socket) => {
-  const user = socket.request.user;
-  socket.emit("new-user",`a user connected with ID# ${socket.id} - ${user.handle}`);
-  //console.log("welcome", user.handle);
-});
-
-app.use(errorHandler);
+socketEventHandler(io);
 
 const startServer = async () => {
   try {
     console.log("Connecting to db...");
-    await db.sequelize.authenticate();
-    await db.sequelize.sync({alter: true}); //alter or force
-    httpServer.listen(config.port, () => console.log("Server running on port", config.port));
+    await db.sequelize.sync({alter: true}); // alter or force to reconfigure or recreate tables
+    await db.sequelize.authenticate(); // test db connection
+    httpServer.listen(config.port);
+    console.log("Server listening on port", config.port);
   } catch (err) {
     console.trace(err);
   }

@@ -68,4 +68,4 @@ const ChatFeedBubbles = (props) => {
     )
 };
 
-export default ChatFeedBubbles;
+export default React.memo(ChatFeedBubbles);
