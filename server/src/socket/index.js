@@ -1,18 +1,24 @@
 "use strict";
 
-import chatsHandler from "./chat-handler.js";
-import connectionHandler from "./connection-handler.js";
-import messageHandler from "./message-handler.js";
-
 export const socketEventHandler = (io) => {
-    
-    const registerHandlers = (socket) => {
-        connectionHandler(io, socket);
-        chatsHandler(io, socket);
-        messageHandler(io, socket);
-    };
+    return io.on("connection", (socket) => {
+        let room = null;
 
-    io.on("connection", registerHandlers);
+        socket.on("chat:join", (chatId) => {
+            if (!chatId) return;
+            socket.join(chatId);
+            room = chatId;
+        });
+
+        socket.on("message:create", (payload) => {
+            if (!payload.chatId) return;
+            socket.to(room).emit("message:receive", payload);
+        });
+
+        socket.on("disconnect", ()=>{
+            console.log("a user disconnected!");
+        });
+    });
 };
 
 export const wrap = (middleware) => {

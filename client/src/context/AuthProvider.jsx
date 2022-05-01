@@ -5,6 +5,8 @@ const AuthContext = createContext({});
 
 const initAuthState = {
     user: {
+        firstName: "",
+        lastName: "",
         email: "",
         handle: "",
         id: null,
@@ -14,10 +16,10 @@ const initAuthState = {
 
 export const AuthProvider = (props) => {
     const [auth, setAuth] = useState(initAuthState);
-    const { response, request } = useFetch("/api/auth/authenticate", { credentials: "include" });
+    const { response, request } = useFetch("/api/auth/authenticate", { credentials: "include" }, { user: null });
 
     useEffect(() => {
-        if (response?.data?.user) {
+        if (response.data.user) {
             setAuth({ user: response.data.user, isAuthenticated: true });
         }
     }, [response]);

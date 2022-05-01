@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 
-const defaultOptions = {
+const initialConfig = {
     method: "GET",
     headers: {
         "Content-Type": "application/json; charset=UTF-8",
@@ -8,23 +8,29 @@ const defaultOptions = {
     body: undefined,
 };
 
-const useFetch = (URL = "", OPTIONS = { ...defaultOptions }, DATA = []) => {
-    const [response, setResponse] = useState({
+const initialState = (data) => {
+    return {
         ok: false,
-        data: DATA,
+        data: data,
         status: undefined,
         statusText: undefined,
         headers: {},
-    });
+    };
+};
+
+const useFetch = (URL = "", CONFIG = { ...initialConfig }, INITIAL_DATA = []) => {
+    const [response, setResponse] = useState(initialState(INITIAL_DATA));
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [url, setUrl] = useState(URL);
-    const [option, setOption] = useState({...defaultOptions, ...OPTIONS});
+    const [option, setOption] = useState({ ...initialConfig, ...CONFIG });
 
     const stringifyData = useCallback((data) => {
-        const isFormData = data instanceof FormData;
+        if (!data) {
+            return undefined;
+        }
 
-        if (isFormData) {
+        if (data instanceof FormData) {
             return data;
         }
 
@@ -40,12 +46,14 @@ const useFetch = (URL = "", OPTIONS = { ...defaultOptions }, DATA = []) => {
     }, []);
 
     const request = useCallback(
-        (url = "", options = { ...defaultOptions }) => {
+        (url = "", config = { ...initialConfig }, initialData = []) => {
+            setResponse(initialState(initialData));
+            setError(null);
             setUrl(url);
             setOption({
-                ...defaultOptions,
-                ...options,
-                body: stringifyData(options.body),
+                ...initialConfig,
+                ...config,
+                body: stringifyData(config.body),
             });
         },
         [stringifyData]
@@ -58,10 +66,8 @@ const useFetch = (URL = "", OPTIONS = { ...defaultOptions }, DATA = []) => {
         const signal = controller.signal;
 
         async function fetchData() {
+            setIsLoading(true);
             try {
-                setIsLoading(true);
-                setResponse(null);
-                setError(null);
                 const res = await fetch(url, { ...option, signal });
                 const text = await res.text();
                 const data = {
@@ -71,10 +77,9 @@ const useFetch = (URL = "", OPTIONS = { ...defaultOptions }, DATA = []) => {
                     statusText: res.statusText,
                     headers: option?.headers || {},
                 };
-                if (signal.aborted) return;
+
                 res.ok ? setResponse(data) : setError(data);
             } catch (err) {
-                if (signal.aborted) return;
                 setError({
                     ok: false,
                     data: err.message,
@@ -83,7 +88,6 @@ const useFetch = (URL = "", OPTIONS = { ...defaultOptions }, DATA = []) => {
                     headers: option.headers || {},
                 });
             } finally {
-                if (signal.aborted) return;
                 setIsLoading(false);
             }
         }

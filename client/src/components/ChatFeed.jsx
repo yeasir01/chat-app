@@ -9,11 +9,10 @@ import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import Divider from "@mui/material/Divider";
-import ChatFeedBubbles from "./ChatFeedBubbles.jsx";
+import MessageBubbles from "./MessageBubbles.jsx";
 import ListItemText from "@mui/material/ListItemText";
 import EmojiComponent from "./EmojiComponent.jsx";
 import LoaderBoundary from "./LoaderBoundary.jsx";
-import useFetch from "../hooks/useFetch.jsx";
 
 const useStyles = () => ({
     root: {
@@ -56,37 +55,15 @@ const keyPress = {
 };
 
 const ChatFeed = (props) => {
-    const [messages, setMessages] = React.useState([]);
     const [input, setInput] = React.useState("");
-    const { response: fetchResponse, error: fetchError, isLoading: fetchLoading, request: fetchRequest } = useFetch();
-    const {response: postResponse, error: postError, isLoading: postLoading, request: postRequest} = useFetch();
-
-    const isNotEmpty = Boolean(input.trim());
+    
     const classes = useStyles();
 
-    React.useEffect(() => {
-        fetchRequest(`/api/messages?chatId=${props.activeChat.id}`);
-    }, [props.activeChat.id, fetchRequest]);
-
-    React.useEffect(() => {
-        if (fetchResponse?.ok) {
-            setMessages(fetchResponse.data);
-        }
-    }, [fetchResponse]);
-
-    React.useEffect(()=>{
-        if (postResponse?.ok) {
-            setMessages(prevMsg => [...prevMsg, postResponse.data])
-        }
-    },[postResponse])
-
-    const sendMessage = () => {
-        if (isNotEmpty) {
-            props.socket.emit("message:create", { chatId: props.activeChat.id, message: input })
-            setInput("");
-        }
-
-    };
+    const handleSendMessage = () => {
+        if (!input.trim()) return;
+        props.sendMessage(input);
+        setInput("");
+    }
 
     const handleKeyDown = (event) => {
         if (event.key === "Shift" || event.key === "Enter") {
@@ -95,7 +72,7 @@ const ChatFeed = (props) => {
 
         if (keyPress["Enter"] && !keyPress["Shift"]) {
             event.preventDefault();
-            sendMessage();
+            handleSendMessage();
         }
     };
 
@@ -110,7 +87,7 @@ const ChatFeed = (props) => {
     };
 
     const handleEmojiSelection = React.useCallback((emoji) => {
-        setInput((prev) => prev + emoji);
+        setInput(prevState => prevState + emoji);
     }, []);
 
     return (
@@ -134,8 +111,8 @@ const ChatFeed = (props) => {
                     <Divider />
                 </Grid>
                 <Grid item xs padding={4} sx={{ overflowY: "auto" }}>
-                    <LoaderBoundary loading={fetchLoading}>
-                        <ChatFeedBubbles messages={messages} />
+                    <LoaderBoundary loading={props.isLoading}>
+                        <MessageBubbles messages={props.messages} />
                     </LoaderBoundary>
                 </Grid>
                 <Grid item>
@@ -169,7 +146,7 @@ const ChatFeed = (props) => {
                                     sx: { pl: 3 },
                                     endAdornment: (
                                         <InputAdornment position="end">
-                                            <IconButton onClick={sendMessage}>
+                                            <IconButton onClick={handleSendMessage}>
                                                 <SendOutlinedIcon color="primary" />
                                             </IconButton>
                                         </InputAdornment>

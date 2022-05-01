@@ -23,7 +23,7 @@ const useStyles = () => ({
     }
 });
 
-const EmojiButton = ({handleSelect}) => {
+const EmojiButton = (props) => {
     const [anchor, setAnchor] = React.useState(null);
 
     const classes = useStyles();
@@ -61,7 +61,7 @@ const EmojiButton = ({handleSelect}) => {
             >
                 <Box sx={classes.wrapper}>
                     {emojis.map(( emoji, idx )=>(
-                        <IconButton sx={classes.button} key={idx} onClick={(e)=> handleSelect(emoji)}>
+                        <IconButton sx={classes.button} key={idx} onClick={(e)=> props.handleSelect(emoji)}>
                             {emoji}
                         </IconButton>
                     ))}

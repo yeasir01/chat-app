@@ -13,8 +13,8 @@ export const register = async (req, res, next) => {
 
 export const login = (req, res, next) => {
     try {
-        const { email, handle, id } = req.user;
-        res.status(200).json({ user: { email, handle, id } });
+        const { email, handle, id, firstName, lastName, avatar } = req.user;
+        res.status(200).json({ user: { email, handle, id, firstName, lastName, avatar } });
     } catch (err) {
         next(err);
     }
@@ -22,8 +22,8 @@ export const login = (req, res, next) => {
 
 export const getProfile = (req, res, next) => {
     try {
-        const { email, handle, id } = req.user;
-        res.status(200).json({ user: { email, handle, id } });
+        const { email, handle, id, firstName, lastName, avatar } = req.user;
+        res.status(200).json({ user: { email, handle, id, firstName, lastName, avatar } });
     } catch (err) {
         next(err);
     }

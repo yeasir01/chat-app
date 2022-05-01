@@ -11,6 +11,10 @@ const ChatFeedBubbles = (props) => {
 
     const lastMessageRef = React.useRef(null);
 
+    React.useLayoutEffect(() => {
+        lastMessageRef.current.scrollIntoView();
+    }, []);
+    
     React.useEffect(() => {
         lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
     }, [props.messages]);
@@ -37,18 +41,18 @@ const ChatFeedBubbles = (props) => {
 
     return (
         <>
-            {props.messages.map((message) => {
+            {props.messages.map((message, index) => {
                 const isOwner = auth.user.id === message.user.id;
                 const firstName = message.user.firstName || "";
                 const lastName = message.user.lastName || "";
                 const avatar = message.user.avatar || "";
                 const initials = isOwner ? "ME" : getInitials(firstName, lastName);
-                const time = convertTime(message.createdAt)
+                const time = convertTime(message.createdAt);
 
                 const classes = styles(isOwner);
                 
                 return (
-                    <Grid container width={1} justifyContent={isOwner ? "flex-end" : "flex-start"} key={message.id}>
+                    <Grid container width={1} justifyContent={isOwner ? "flex-end" : "flex-start"} key={index}>
                         <Grid item sx={{maxWidth: 0.5, my: 1}}>
                             <Box sx={classes.wrapper}>
                                 <Avatar sx={{ width: 35, height: 35, fontSize: "1rem" }} src={avatar}>

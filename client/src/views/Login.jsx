@@ -22,8 +22,8 @@ const Login = () => {
     const { auth, setAuth } = useAuth();
     const { response, error, isLoading, request } = useFetch();
     const [formData, setFormData] = React.useState({
-        email: "",
-        password: "",
+        email: "mike@example.com",
+        password: "password",
         remember: false,
     });
 

@@ -10,7 +10,6 @@ import Divider from "@mui/material/Divider";
 import SearchBar from "./SearchBar.jsx";
 import Badge from '@mui/material/Badge';
 import { truncate } from "../util/helpers.js";
-import useFetch from "../hooks/useFetch.jsx";
 import Fade from "@mui/material/Fade";
 import useAuth from "../hooks/useAuth.jsx"
 import LoaderBoundary from "./LoaderBoundary.jsx";
@@ -33,16 +32,7 @@ const useStyles = () => ({
 });
 
 const ChatListContainer = (props) => {
-    const [chats, setChats] = React.useState([]);
-    const { response, error, isLoading } = useFetch("/api/chats");
     const { auth } = useAuth();
-
-    React.useEffect(() => {
-        if (response?.ok) {
-            setChats(response.data.chats);
-        }
-    }, [response]);
-
     const classes = useStyles();
 
     return (
@@ -55,9 +45,9 @@ const ChatListContainer = (props) => {
                     <Divider />
                 </Grid>
                 <Grid item xs sx={{ overflowY: "auto" }}>
-                    <LoaderBoundary loading={isLoading}>
+                    <LoaderBoundary loading={props.isLoading}>
                         <List disablePadding>
-                            {chats.map((chat, idx) => {
+                            {props.chatList.map((chat, idx) => {
                                 const isMe = chat.messages[0].user.id === auth.user.id;
                                 const isGroup = chat.isGroup;
                                 const groupName = chat.title || "";
