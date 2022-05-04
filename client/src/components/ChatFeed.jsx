@@ -13,6 +13,8 @@ import MessageBubbles from "./MessageBubbles.jsx";
 import ListItemText from "@mui/material/ListItemText";
 import EmojiComponent from "./EmojiComponent.jsx";
 import LoaderBoundary from "./LoaderBoundary.jsx";
+import useAuth from "../hooks/useAuth.jsx";
+import useFetch from "../hooks/useFetch.jsx";
 
 const useStyles = () => ({
     root: {
@@ -54,16 +56,48 @@ const keyPress = {
     Enter: false,
 };
 
-const ChatFeed = (props) => {
+const ChatFeed = ({ socket, activeChat }) => {
     const [input, setInput] = React.useState("");
-    
+    const [messages, setMessages] = React.useState([]);
+
+    const { response, isLoading, request } = useFetch();
+    const { auth } = useAuth();
     const classes = useStyles();
 
-    const handleSendMessage = () => {
+    React.useEffect(() => {
+        socket.on("message:receive", (payload) => {
+            setMessages((prevMsgs) => [...prevMsgs, payload]);
+        });
+    }, [socket]);
+
+    React.useEffect(() => {
+        if (response.ok) {
+            setMessages(response.data);
+        }
+    }, [response]);
+
+    React.useEffect(() => {
+        if (activeChat.id) {
+            request(`/api/messages?chat-id=${activeChat.id}`);
+        }
+    }, [activeChat, request]);
+
+    const sendMessage = () => {
         if (!input.trim()) return;
-        props.sendMessage(input);
+
+        const now = new Date().toISOString();
+
+        const newMsg = {
+            chatId: activeChat.id,
+            text: input,
+            createdAt: now,
+            user: auth.user,
+        };
+
+        setMessages((prevMsgs) => [...prevMsgs, newMsg]);
+        socket.emit("message:create", newMsg);
         setInput("");
-    }
+    };
 
     const handleKeyDown = (event) => {
         if (event.key === "Shift" || event.key === "Enter") {
@@ -72,7 +106,7 @@ const ChatFeed = (props) => {
 
         if (keyPress["Enter"] && !keyPress["Shift"]) {
             event.preventDefault();
-            handleSendMessage();
+            sendMessage();
         }
     };
 
@@ -87,7 +121,7 @@ const ChatFeed = (props) => {
     };
 
     const handleEmojiSelection = React.useCallback((emoji) => {
-        setInput(prevState => prevState + emoji);
+        setInput((prevState) => prevState + emoji);
     }, []);
 
     return (
@@ -95,11 +129,8 @@ const ChatFeed = (props) => {
             <Grid container direction="column" height={1}>
                 <Grid item sx={classes.headerGroup}>
                     <Box sx={classes.headerItem}>
-                        <Avatar
-                            sx={classes.avatar}
-                            src={props.activeChat.avatar}
-                        />
-                        <ListItemText primary={props.activeChat.title} />
+                        <Avatar sx={classes.avatar} src={activeChat.avatar} />
+                        <ListItemText primary={activeChat.title} />
                     </Box>
                     <Box>
                         <IconButton>
@@ -111,8 +142,8 @@ const ChatFeed = (props) => {
                     <Divider />
                 </Grid>
                 <Grid item xs padding={4} sx={{ overflowY: "auto" }}>
-                    <LoaderBoundary loading={props.isLoading}>
-                        <MessageBubbles messages={props.messages} />
+                    <LoaderBoundary loading={isLoading}>
+                        <MessageBubbles messages={messages} />
                     </LoaderBoundary>
                 </Grid>
                 <Grid item>
@@ -128,7 +159,9 @@ const ChatFeed = (props) => {
                         gap={1}
                     >
                         <Grid item>
-                            <EmojiComponent handleSelect={handleEmojiSelection} />
+                            <EmojiComponent
+                                handleSelect={handleEmojiSelection}
+                            />
                         </Grid>
                         <Grid item xs>
                             <TextField
@@ -143,10 +176,10 @@ const ChatFeed = (props) => {
                                 multiline
                                 maxRows={4}
                                 InputProps={{
-                                    sx: { pl: 3 },
+                                    sx: { paddingLeft: 3 },
                                     endAdornment: (
                                         <InputAdornment position="end">
-                                            <IconButton onClick={handleSendMessage}>
+                                            <IconButton onClick={sendMessage}>
                                                 <SendOutlinedIcon color="primary" />
                                             </IconButton>
                                         </InputAdornment>

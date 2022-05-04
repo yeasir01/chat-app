@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 
-const initialConfig = {
+const defaultConfig = {
     method: "GET",
     headers: {
         "Content-Type": "application/json; charset=UTF-8",
@@ -18,12 +18,12 @@ const initialState = (data) => {
     };
 };
 
-const useFetch = (URL = "", CONFIG = { ...initialConfig }, INITIAL_DATA = []) => {
+const useFetch = (URL = "", CONFIG = { ...defaultConfig }, INITIAL_DATA = []) => {
     const [response, setResponse] = useState(initialState(INITIAL_DATA));
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [url, setUrl] = useState(URL);
-    const [option, setOption] = useState({ ...initialConfig, ...CONFIG });
+    const [option, setOption] = useState({ ...defaultConfig, ...CONFIG });
 
     const stringifyData = useCallback((data) => {
         if (!data) {
@@ -46,12 +46,12 @@ const useFetch = (URL = "", CONFIG = { ...initialConfig }, INITIAL_DATA = []) =>
     }, []);
 
     const request = useCallback(
-        (url = "", config = { ...initialConfig }, initialData = []) => {
+        (url = "", config = { ...defaultConfig }, initialData = []) => {
             setResponse(initialState(initialData));
             setError(null);
             setUrl(url);
             setOption({
-                ...initialConfig,
+                ...defaultConfig,
                 ...config,
                 body: stringifyData(config.body),
             });

@@ -56,9 +56,9 @@ const ChatListContainer = (props) => {
                                 const lastMessageUser = chat.messages[0].user.firstName || "";
                                 const firstName = chat.users[0].firstName || "";
                                 const lastName = chat.users[0].lastName || "";
-                                const personsName = firstName + " " + lastName;
-                                const displayName = isGroup ? groupName : personsName;
-                                const lastMsgDisplay = (isMe ? "Me" : lastMessageUser) + ": " + lastMessage;
+                                const fullName = firstName + " " + lastName;
+                                const displayName = isGroup ? groupName : fullName;
+                                const lastMsgDisplay = `${isMe ? "Me" : lastMessageUser}: ${lastMessage}`;
                                 const animationDelay = 300 * (idx + 1);
                                 const isOnline = isGroup ? false : chat.users[0].isOnline;
                                 

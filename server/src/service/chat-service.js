@@ -31,7 +31,7 @@ const findAllChatsByUserId = async (userId) => {
                 },
                 {
                     model: db.Message,
-                    attributes: ["body", "updatedAt", "userId"],
+                    attributes: ["text", "updatedAt", "userId"],
                     order: [["updatedAt", "DESC"]],
                     limit: 1,
                     include: {
@@ -43,7 +43,7 @@ const findAllChatsByUserId = async (userId) => {
         },
     });
     
-    return chats[0];
+    return chats[0] || [];
 };
 
 export { findAllChatsByUserId };

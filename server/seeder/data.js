@@ -112,31 +112,31 @@ const participants = [
 const messages = [
     {
         id: 1,
-        body: "Hello Team",
+        text: "Hello Team",
         userId: 1,
         chatId: 1
     },
     {
         id: 2,
-        body: "Hi Mike",
+        text: "Hi Mike",
         userId: 2,
         chatId: 1
     },
     {
         id: 3,
-        body: "Hello Dan",
+        text: "Hello Dan",
         userId: 5,
         chatId: 2
     },
     {
         id: 4,
-        body: "Hi John 😀",
+        text: "Hi John 😀",
         userId: 1,
         chatId: 3
     },
     {
         id: 5,
-        body: "what-up mike?",
+        text: "what-up mike?",
         userId: 2,
         chatId: 3
     },

@@ -11,7 +11,7 @@ import chatRoutes from "./routes/chat-routes.js";
 import messageRoutes from "./routes/message-route.js";
 import errorHandler from "./middleware/error-handler.js";
 import db from "./models/index.js";
-import passport  from "./config/passport.js";
+import passport from "./config/passport.js";
 import session from "express-session";
 import { Server } from "socket.io";
 import { socketEventHandler, wrap } from "./socket/index.js";
@@ -23,9 +23,9 @@ const io = new Server(httpServer);
 app.set("trust proxy", "loopback"); //research this a bit more
 
 const sessionMiddleware = session({
-  secret: "123456789",
-  saveUninitialized: false,
-  resave: true 
+    secret: "123456789",
+    saveUninitialized: false,
+    resave: true,
 });
 
 app.use(express.urlencoded({ extended: false }));
@@ -46,25 +46,25 @@ io.use(wrap(passport.initialize()));
 io.use(wrap(passport.session()));
 
 io.use((socket, next) => {
-  if (socket.request.user) {
-    next();
-  } else {
-    next(new Error("unauthorized"));
-  }
+    if (socket.request.user) {
+        next();
+    } else {
+        next(new Error("unauthorized"));
+    }
 });
 
 socketEventHandler(io);
 
 const startServer = async () => {
-  try {
-    console.log("Connecting to db...");
-    await db.sequelize.sync({alter: true}); // alter or force to reconfigure or recreate tables
-    await db.sequelize.authenticate(); // test db connection
-    httpServer.listen(config.port);
-    console.log("Server listening on port", config.port);
-  } catch (err) {
-    console.trace(err);
-  }
+    try {
+        console.log("Connecting to db...");
+        await db.sequelize.sync({ alter: true }); // alter or force to reconfigure or recreate tables
+        await db.sequelize.authenticate(); // test db connection
+        httpServer.listen(config.port);
+        console.log("Server listening on port", config.port);
+    } catch (err) {
+        console.trace(err);
+    }
 };
 
 startServer();

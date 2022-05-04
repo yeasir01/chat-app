@@ -7,7 +7,7 @@ const findAllMessagesByChatId = async (chatId) => {
         where: {
             chatId: chatId,
         },
-        attributes: ["id", "body", "createdAt"],
+        attributes: ["id", "text", "createdAt"],
         include: {
             model: db.User,
             attributes: ["id", "firstName", "lastName", "handle", "avatar"],
@@ -17,37 +17,28 @@ const findAllMessagesByChatId = async (chatId) => {
     return messages;
 };
 
-const createChatMessage = async (userId, chatId, message) => {
+const saveMessageToDB = async (msg) => {
     const transaction = await db.sequelize.transaction();
     
     try { 
         const record = await db.Message.create({
-            body: message,
-            chatId,
-            userId
+            text: msg.text,
+            chatId: msg.chatId,
+            userId: msg.user.id,
         }, {
             transaction
         });
         
         await transaction.commit();
-        
-        const data = await db.Message.findOne({
-            where: {
-                id: record.id
-            },
-            attributes: ["id", "body", "createdAt"],
-            include: {
-                model: db.User,
-                attributes: ["id", "firstName", "lastName", "handle", "avatar"]
-            }
-        });
-        
-        return data;
+
+        console.log(record)
+
+        return record.get({ plain: true });
         
     } catch (error) {
         await transaction.rollback();
-        console.log(error);
+        console.error(error);
     }
 };
 
-export { findAllMessagesByChatId, createChatMessage };
+export { findAllMessagesByChatId, saveMessageToDB };

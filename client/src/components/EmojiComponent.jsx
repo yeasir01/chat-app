@@ -48,7 +48,7 @@ const EmojiButton = (props) => {
                 id={id} 
                 open={isOpen} 
                 anchorEl={anchor} 
-                onClose={handleClose} 
+                onClose={handleClose}
                 anchorOrigin={{
                     vertical: 'top',
                     horizontal: 'center',
@@ -61,7 +61,7 @@ const EmojiButton = (props) => {
             >
                 <Box sx={classes.wrapper}>
                     {emojis.map(( emoji, idx )=>(
-                        <IconButton sx={classes.button} key={idx} onClick={(e)=> props.handleSelect(emoji)}>
+                        <IconButton sx={classes.button} key={idx} onClick={()=> props.handleSelect(emoji)}>
                             {emoji}
                         </IconButton>
                     ))}

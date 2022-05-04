@@ -6,7 +6,7 @@ import useAuth from "../hooks/useAuth.jsx";
 import Avatar from '@mui/material/Avatar';
 import { getInitials, convertTime } from "../util/helpers.js";
 
-const ChatFeedBubbles = (props) => {
+const MessageBubbles = ({messages}) => {
     const { auth } = useAuth();
 
     const lastMessageRef = React.useRef(null);
@@ -17,7 +17,7 @@ const ChatFeedBubbles = (props) => {
     
     React.useEffect(() => {
         lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
-    }, [props.messages]);
+    }, [messages]);
 
     const styles = (isOwner) => ({
         wrapper: {
@@ -41,7 +41,7 @@ const ChatFeedBubbles = (props) => {
 
     return (
         <>
-            {props.messages.map((message, index) => {
+            {messages.map((message, index) => {
                 const isOwner = auth.user.id === message.user.id;
                 const firstName = message.user.firstName || "";
                 const lastName = message.user.lastName || "";
@@ -59,7 +59,7 @@ const ChatFeedBubbles = (props) => {
                                     {initials}
                                 </Avatar>
                                 <Box sx={classes.bubble}>
-                                    <Typography variant="body1" sx={{whiteSpace: 'pre-line'}}>{message.body}</Typography>
+                                    <Typography variant="body1" sx={{whiteSpace: 'pre-line'}}>{message.text}</Typography>
                                 </Box>
                                 {/* <Typography variant="caption" sx={classes.date}>{time}</Typography> */}                       
                             </Box>
@@ -72,4 +72,4 @@ const ChatFeedBubbles = (props) => {
     )
 };
 
-export default React.memo(ChatFeedBubbles);
+export default React.memo(MessageBubbles);

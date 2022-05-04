@@ -1,21 +1,34 @@
 "use strict";
 
+import { saveMessageToDB } from "../service/message-service.js";
+
 export const socketEventHandler = (io) => {
     return io.on("connection", (socket) => {
-        let room = null;
 
         socket.on("chat:join", (chatId) => {
-            if (!chatId) return;
             socket.join(chatId);
-            room = chatId;
         });
 
-        socket.on("message:create", (payload) => {
-            if (!payload.chatId) return;
-            socket.to(room).emit("message:receive", payload);
+        socket.on("chat:active", (chatId) => {
+            socket.activeChat = chatId;
         });
 
-        socket.on("disconnect", ()=>{
+        socket.on("message:create", (message) => {
+            const activeChat = socket.activeChat;
+            //const user = socket.request.user;
+            
+            saveMessageToDB(message)
+                .then((res) => {
+                    console.log("response", res);
+                    console.log("message Obj", message);
+                    socket.to(activeChat).emit("message:receive", message);
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        });
+
+        socket.on("disconnect", () => {
             console.log("a user disconnected!");
         });
     });
