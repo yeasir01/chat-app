@@ -7,7 +7,7 @@ import Avatar from '@mui/material/Avatar';
 import { getInitials, convertTime } from "../util/helpers.js";
 
 const MessageBubbles = ({messages}) => {
-    const { auth } = useAuth();
+    const auth = useAuth();
 
     const lastMessageRef = React.useRef(null);
 

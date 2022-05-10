@@ -61,12 +61,12 @@ const ChatFeed = ({ socket, activeChat }) => {
     const [messages, setMessages] = React.useState([]);
 
     const { response, isLoading, request } = useFetch();
-    const { auth } = useAuth();
+    const auth = useAuth();
     const classes = useStyles();
 
     React.useEffect(() => {
-        socket.on("message:receive", (payload) => {
-            setMessages((prevMsgs) => [...prevMsgs, payload]);
+        socket.on("message:receive", (message) => {
+            setMessages((prevMsgs) => [...prevMsgs, message]);
         });
     }, [socket]);
 
@@ -83,19 +83,20 @@ const ChatFeed = ({ socket, activeChat }) => {
     }, [activeChat, request]);
 
     const sendMessage = () => {
-        if (!input.trim()) return;
+        if (input.trim() === "") return;
 
-        const now = new Date().toISOString();
+        const isoDate = new Date().toISOString();
 
-        const newMsg = {
+        const message = {
             chatId: activeChat.id,
             text: input,
-            createdAt: now,
+            createdAt: isoDate,
             user: auth.user,
         };
 
-        setMessages((prevMsgs) => [...prevMsgs, newMsg]);
-        socket.emit("message:create", newMsg);
+        socket.emit("message:send", message);
+
+        setMessages((prevMsgs) => [...prevMsgs, message]);
         setInput("");
     };
 

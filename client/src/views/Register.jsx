@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useReducer } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import useFetch from "../hooks/useFetch.jsx";
 import useAuth from "../hooks/useAuth.jsx";
@@ -16,39 +16,27 @@ import Paper from "@mui/material/Paper";
 import Copyright from "../components/Copyright.jsx";
 import AnimatedAlert from "../components/AnimatedAlert.jsx";
 import background from "../assets/images/bg.svg";
+import { INITIAL_REGISTER_STATE, registerReducer, registerTypes } from "../reducers/register-reducer.js";
 
 const Register = () => {
-    const { auth } = useAuth();
+    const [state, dispatch] = useReducer( registerReducer, INITIAL_REGISTER_STATE );
     const { response, error, isLoading, request } = useFetch();
-    const [formData, setFormData] = React.useState({
-        firstName: "",
-        lastName: "",
-        email: "",
-        password: "",
-        passwordRepeat: "",
-        handle: "",
-    });
-
+    
+    const auth = useAuth();
     const navigate = useNavigate();
-    const serverValError = error?.data?.validationErrors;
 
-    const handleChange = (event) => {
-        const target = event.target;
-        const value =
-            target.type === "checkbox" ? target.checked : target.value;
-        setFormData((prev) => ({ ...prev, [target.name]: value }));
-    };
+    const serverValError = auth.error?.validationErrors;
 
     const handleSubmit = (event) => {
         event.preventDefault();
         request("/api/auth/register", {
             method: "POST",
-            body: formData,
+            body: state,
         });
     };
 
     React.useEffect(() => {
-        if (response?.ok) {
+        if (response.ok) {
             return navigate("/login", { replace: false });
         }
     }, [navigate, response]);
@@ -113,8 +101,13 @@ const Register = () => {
                                     fullWidth
                                     id="firstName"
                                     name="firstName"
-                                    value={formData.firstName}
-                                    onChange={handleChange}
+                                    value={state.firstName}
+                                    onChange={(e) =>
+                                        dispatch({
+                                            type: registerTypes.SET_FIRST_NAME,
+                                            payload: e.target.value,
+                                        })
+                                    }
                                     label="First Name"
                                     autoFocus
                                     helperText={serverValError?.firstName}
@@ -130,8 +123,13 @@ const Register = () => {
                                     fullWidth
                                     id="lastName"
                                     name="lastName"
-                                    value={formData.lastName}
-                                    onChange={handleChange}
+                                    value={state.lastName}
+                                    onChange={(e) =>
+                                        dispatch({
+                                            type: registerTypes.SET_LAST_NAME,
+                                            payload: e.target.value,
+                                        })
+                                    }
                                     label="Last Name"
                                     helperText={serverValError?.lastName}
                                     error={
@@ -147,8 +145,13 @@ const Register = () => {
                                     label="Handle"
                                     type="handle"
                                     id="handle"
-                                    value={formData.handle}
-                                    onChange={handleChange}
+                                    value={state.handle}
+                                    onChange={(e) =>
+                                        dispatch({
+                                            type: registerTypes.SET_HANDLE,
+                                            payload: e.target.value,
+                                        })
+                                    }
                                     autoComplete="user-name"
                                     helperText={serverValError?.handle}
                                     error={
@@ -163,8 +166,13 @@ const Register = () => {
                                     id="email"
                                     label="Email Address"
                                     name="email"
-                                    value={formData.email}
-                                    onChange={handleChange}
+                                    value={state.email}
+                                    onChange={(e) =>
+                                        dispatch({
+                                            type: registerTypes.SET_EMAIL,
+                                            payload: e.target.value,
+                                        })
+                                    }
                                     autoComplete="email"
                                     helperText={serverValError?.email}
                                     error={serverValError?.email ? true : false}
@@ -178,8 +186,13 @@ const Register = () => {
                                     label="Password"
                                     type="password"
                                     id="password"
-                                    value={formData.password}
-                                    onChange={handleChange}
+                                    value={state.password}
+                                    onChange={(e) =>
+                                        dispatch({
+                                            type: registerTypes.SET_PASSWORD,
+                                            payload: e.target.value,
+                                        })
+                                    }
                                     autoComplete="new-password"
                                     helperText={serverValError?.password}
                                     error={
@@ -195,8 +208,13 @@ const Register = () => {
                                     label="Confirm Password"
                                     type="password"
                                     id="passwordRepeat"
-                                    value={formData.passwordRepeat}
-                                    onChange={handleChange}
+                                    value={state.passwordRepeat}
+                                    onChange={(e) =>
+                                        dispatch({
+                                            type: registerTypes.SET_PASSWORD_REPEAT,
+                                            payload: e.target.value,
+                                        })
+                                    }
                                     autoComplete="new-password"
                                     helperText={serverValError?.passwordRepeat}
                                     error={

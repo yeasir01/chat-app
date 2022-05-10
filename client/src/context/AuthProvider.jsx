@@ -1,40 +1,45 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useEffect, useReducer } from "react";
+import { INITIAL_AUTH_STATE, authReducer, authTypes } from "../reducers/auth-reducer.js";
 import useFetch from "../hooks/useFetch.jsx";
 
 const AuthContext = createContext({});
 
-const initAuthState = {
-    user: {
-        firstName: "",
-        lastName: "",
-        email: "",
-        handle: "",
-        id: null,
-    },
-    isAuthenticated: false,
-};
-
-export const AuthProvider = (props) => {
-    const [auth, setAuth] = useState(initAuthState);
-    const { response, request } = useFetch("/api/auth/authenticate", { credentials: "include" }, { user: null });
-
+export const AuthProvider = ({children}) => {
+    const [state, dispatch] = useReducer(authReducer, INITIAL_AUTH_STATE);
+    const { response, error, isLoading, request } = useFetch();
+    
     useEffect(() => {
         if (response.data.user) {
-            setAuth({ user: response.data.user, isAuthenticated: true });
+            dispatch({type: authTypes.SET_USER, payload: response.data.user});
         }
     }, [response]);
+
+    useEffect(()=>{
+        console.log(state)
+    },[state])
 
     const logout = () => {
         request("/api/auth/logout", {
             method: "DELETE",
             credentials: "include",
         });
-        setAuth(initAuthState);
+        dispatch({type: authTypes.RESET});
     };
 
+    const login = (payload) => {
+        request("api/auth/login", {
+            method: "POST",
+            body: {
+                email: payload.email,
+                password: payload.password,
+                remember: payload.remember
+            }
+        },{ user: null })
+    }
+    
     return (
-        <AuthContext.Provider value={{ auth, setAuth, logout }}>
-            {props.children}
+        <AuthContext.Provider value={{ user: state.user, isAuthenticated: state.isAuthenticated, error, isLoading, login, logout  }}>
+            {children}
         </AuthContext.Provider>
     );
 };

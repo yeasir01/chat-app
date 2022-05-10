@@ -43,7 +43,7 @@ const findAllChatsByUserId = async (userId) => {
         },
     });
     
-    return chats[0] || [];
+    return chats[0];
 };
 
 export { findAllChatsByUserId };

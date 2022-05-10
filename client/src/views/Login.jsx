@@ -1,6 +1,5 @@
-import * as React from "react";
+import React, { useReducer } from "react";
 import { Link as RouterLink, useNavigate, useLocation } from "react-router-dom";
-import useFetch from "../hooks/useFetch.jsx";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -15,51 +14,32 @@ import Typography from "@mui/material/Typography";
 import Copyright from "../components/Copyright.jsx";
 import AnimatedAlert from "../components/AnimatedAlert.jsx";
 import useAuth from "../hooks/useAuth.jsx";
+import {
+    loginTypes,
+    loginReducer,
+    INITIAL_LOGIN_STATE,
+} from "../reducers/login-reducer.js";
 
 import background from "../assets/images/bg.svg";
 
 const Login = () => {
-    const { auth, setAuth } = useAuth();
-    const { response, error, isLoading, request } = useFetch();
-    const [formData, setFormData] = React.useState({
-        email: "mike@example.com",
-        password: "password",
-        remember: false,
-    });
+    const [state, dispatch] = useReducer(loginReducer, INITIAL_LOGIN_STATE);
 
+    const auth = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
+
     const from = location.state?.from?.pathname || "/";
-    const serverValError = error?.data?.validationErrors;
+    const serverValError = auth.error?.validationErrors;
 
-    const handleChange = (event) => {
-        const target = event.target;
-        const value =
-            target.type === "checkbox" ? target.checked : target.value;
-        setFormData((prev) => ({ ...prev, [target.name]: value }));
-    };
-
-    const handleSubmit = async (event) => {
+    const handleSubmit = (event) => {
         event.preventDefault();
-
-        request("/api/auth/login", {
-            method: "POST",
-            body: formData,
-        });
+        auth.login(state);
     };
-
-    React.useEffect(() => {
-        if (response?.data?.user) {
-            setAuth({
-                user: response.data.user,
-                isAuthenticated: true,
-            });
-        }
-    }, [response, setAuth]);
 
     React.useEffect(() => {
         if (auth.isAuthenticated) {
-            return navigate(from, { replace: true });
+            navigate(from, { replace: true });
         }
     }, [auth, from, navigate]);
 
@@ -108,7 +88,7 @@ const Login = () => {
                         Sign in
                     </Typography>
                     <AnimatedAlert
-                        message={error?.statusText}
+                        message={auth.error?.statusText}
                         severity="error"
                     />
                     <Box
@@ -126,8 +106,13 @@ const Login = () => {
                             name="email"
                             autoComplete="email"
                             autoFocus
-                            value={formData.email}
-                            onChange={handleChange}
+                            value={state.email}
+                            onChange={(e) => {
+                                dispatch({
+                                    type: loginTypes.SET_EMAIL,
+                                    payload: e.target.value,
+                                });
+                            }}
                             helperText={serverValError?.email}
                             error={serverValError?.email ? true : false}
                         />
@@ -140,8 +125,13 @@ const Login = () => {
                             type="password"
                             id="password"
                             autoComplete="current-password"
-                            value={formData.password}
-                            onChange={handleChange}
+                            value={state.password}
+                            onChange={(e) => {
+                                dispatch({
+                                    type: loginTypes.SET_PASSWORD,
+                                    payload: e.target.value,
+                                });
+                            }}
                             helperText={serverValError?.password}
                             error={serverValError?.password ? true : false}
                         />
@@ -151,8 +141,13 @@ const Login = () => {
                                     value="remember"
                                     color="primary"
                                     name="remember"
-                                    onChange={handleChange}
-                                    checked={formData.remember}
+                                    onChange={(e) => {
+                                        dispatch({
+                                            type: loginTypes.SET_REMEMBER,
+                                            payload: e.target.checked,
+                                        });
+                                    }}
+                                    checked={state.remember}
                                 />
                             }
                             label="Remember me"
@@ -163,7 +158,7 @@ const Login = () => {
                             variant="contained"
                             sx={{ mt: 1, mb: 2, py: 1.1 }}
                         >
-                            {isLoading ? "Loading..." : "Submit"}
+                            {auth.isLoading ? "Loading..." : "Submit"}
                         </Button>
                         <Grid container>
                             <Grid item xs>

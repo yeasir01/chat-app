@@ -11,5 +11,14 @@ const changeStatusToOnline = async (userId) => {
         }
     });
 };
+const changeStatusToOffline = async (userId) => {
+    await db.User.update({
+        isOnline: false
+    },{
+        where: {
+            id: userId
+        }
+    });
+};
 
-export { changeStatusToOnline };
+export { changeStatusToOnline, changeStatusToOffline };

@@ -32,9 +32,9 @@ const useStyles = () => ({
 });
 
 const ChatListContainer = (props) => {
-    const { auth } = useAuth();
+    const auth = useAuth();
     const classes = useStyles();
-
+    
     return (
         <Paper elevation={1} sx={classes.root}>
             <Grid container direction="column" height={1}>
@@ -48,25 +48,25 @@ const ChatListContainer = (props) => {
                     <LoaderBoundary loading={props.isLoading}>
                         <List disablePadding>
                             {props.chatList.map((chat, idx) => {
-                                const isMe = chat.messages[0].user.id === auth.user.id;
-                                const isGroup = chat.isGroup;
-                                const groupName = chat.title || "";
-                                const avatar = isGroup ? chat.avatar : chat.users[0].avatar;
-                                const lastMessage = chat.messages[0].body || "";
-                                const lastMessageUser = chat.messages[0].user.firstName || "";
-                                const firstName = chat.users[0].firstName || "";
-                                const lastName = chat.users[0].lastName || "";
+                                const isMe = chat?.messages[0]?.user?.id === auth.user.id;
+                                const isGroup = chat?.isGroup;
+                                const groupName = chat?.title;
+                                const avatar = isGroup ? chat?.avatar : chat?.users[0]?.avatar;
+                                const lastMessage = chat?.messages[0]?.text;
+                                const lastMessageUser = chat?.messages[0]?.user?.firstName;
+                                const firstName = chat?.users[0]?.firstName;
+                                const lastName = chat?.users[0]?.lastName;
                                 const fullName = firstName + " " + lastName;
                                 const displayName = isGroup ? groupName : fullName;
                                 const lastMsgDisplay = `${isMe ? "Me" : lastMessageUser}: ${lastMessage}`;
                                 const animationDelay = 300 * (idx + 1);
-                                const isOnline = isGroup ? false : chat.users[0].isOnline;
+                                const isOnline = isGroup ? false : chat?.users[0]?.isOnline;
                                 
                                 return (
                                     <Fade in timeout={animationDelay} key={chat.id}>
                                         <ListItemButton
                                             divider
-                                            selected={props.activeChat === chat.id}
+                                            selected={props.activeChat?.id === chat.id}
                                             onClick={() => {
                                                 props.setActiveChat({
                                                     id: chat.id,

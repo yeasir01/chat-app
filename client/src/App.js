@@ -9,6 +9,8 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { AuthProvider } from "./context/AuthProvider.jsx";
 import { ThemeProvider } from "./context/ThemeProvider.jsx";
 import { Routes, Route } from "react-router-dom";
+import ChatList from "./components/ChatList.jsx";
+import PeopleList from "./components/PeopleList.jsx";
 
 const App = () => {
     return (
@@ -21,7 +23,11 @@ const App = () => {
                         <Route path="/login" exact element={<Login />} />
                         <Route path="/register" exact element={<Register />} />
                         <Route element={<RequireAuth />}>
-                            <Route path="/chats" element={<Chats />} />
+                            <Route path="/" element={<Chats />}>
+                                <Route path="/chats" element={<ChatList />} />
+                                <Route path="/people" element={<PeopleList />} />
+                                <Route path="/profile" element={<PeopleList />} />
+                            </Route>
                         </Route>
                         <Route path="*" element={<NoMatch />} />
                     </Routes>

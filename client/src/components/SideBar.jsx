@@ -12,6 +12,7 @@ import useTheme from "../hooks/useTheme.jsx";
 import useAuth from "../hooks/useAuth.jsx";
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
+import { Link, useLocation } from "react-router-dom";
 
 const useStyle = () =>({
     root: {
@@ -24,9 +25,10 @@ const useStyle = () =>({
     listItem: {
         display: "flex",
         flexDirection: "column",
+        
     },
     listItemButton: {
-        borderRadius: 6,
+        borderRadius: 5,
         overflow: "hidden",
         color: "text.secondary",
         "&.Mui-selected": {
@@ -41,32 +43,28 @@ const useStyle = () =>({
 
 const SideBar = () => {
     const [ changeTheme ] = useTheme();
-    const [selected, setSelected] = React.useState(0);
     const { logout } = useAuth();
-    
-    const classes = useStyle();
+    const location = useLocation();
 
-    const handleSelection = (idx) => {
-        setSelected(idx)
-    }
+    const classes = useStyle();
 
     return (
         <Paper elevation={1} sx={classes.root}>
-            <List>
+            <List>             
                 <ListItem sx={classes.listItem}>
-                    <ListItemButton sx={classes.listItemButton} selected={selected === 0} onClick={()=>handleSelection(0)} >
+                    <ListItemButton sx={classes.listItemButton} selected={location.pathname === "/chats"} component={Link} to="/chats" >
                         <ForumOutlinedIcon/>
                     </ListItemButton>
                     <Typography variant='caption'>Chats</Typography>
                 </ListItem>
                 <ListItem sx={classes.listItem}>
-                    <ListItemButton sx={classes.listItemButton} selected={selected === 1} onClick={()=>handleSelection(1)}>
+                    <ListItemButton sx={classes.listItemButton} selected={location.pathname === "/people"} component={Link} to="/people">
                         <PeopleAltOutlinedIcon />
                     </ListItemButton>
                     <Typography variant='caption'>People</Typography>
                 </ListItem>
                 <ListItem sx={classes.listItem}>
-                    <ListItemButton sx={classes.listItemButton} selected={selected === 2} onClick={()=>handleSelection(2)}>
+                    <ListItemButton sx={classes.listItemButton} selected={location.pathname === "/profile"} component={Link} to="/profile">
                         <ManageAccountsOutlinedIcon />
                     </ListItemButton>
                     <Typography variant='caption'>Profile</Typography>

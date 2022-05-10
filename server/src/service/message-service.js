@@ -7,7 +7,7 @@ const findAllMessagesByChatId = async (chatId) => {
         where: {
             chatId: chatId,
         },
-        attributes: ["id", "text", "createdAt"],
+        attributes: ["id", "text", "createdAt", "chatId"],
         include: {
             model: db.User,
             attributes: ["id", "firstName", "lastName", "handle", "avatar"],
@@ -31,9 +31,9 @@ const saveMessageToDB = async (msg) => {
         
         await transaction.commit();
 
-        console.log(record)
+        const obj = record.get({ plain: true });
 
-        return record.get({ plain: true });
+        return obj;
         
     } catch (error) {
         await transaction.rollback();
