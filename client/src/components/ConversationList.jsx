@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 import ListItemText from "@mui/material/ListItemText";
@@ -8,11 +8,11 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Divider from "@mui/material/Divider";
 import SearchBar from "./SearchBar.jsx";
-import Badge from '@mui/material/Badge';
 import { truncate } from "../util/helpers.js";
 import Fade from "@mui/material/Fade";
-import useAuth from "../hooks/useAuth.jsx"
 import LoaderBoundary from "./LoaderBoundary.jsx";
+import { useStore, types } from "../hooks/useStore.jsx";
+import useFetch from "../hooks/useFetch.jsx";
 
 const useStyles = () => ({
     root: {
@@ -31,10 +31,23 @@ const useStyles = () => ({
     },
 });
 
-const ChatListContainer = (props) => {
-    const auth = useAuth();
+const ConversationList = () => {
+    const user = useStore((state) => state.user);
+    const dispatch = useStore((state) => state.dispatch);
+    const chats = useStore((state) => state.chats);
+    const activeChatId = useStore((state) => state.activeChatId);
+
+    const { response, isLoading } = useFetch("/api/chats");
+
     const classes = useStyles();
-    
+
+    useEffect(()=>{
+        if(response.ok){
+            dispatch({type: types.SET_CHATS, payload: response.data.chats})
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[response])
+
     return (
         <Paper elevation={1} sx={classes.root}>
             <Grid container direction="column" height={1}>
@@ -45,12 +58,12 @@ const ChatListContainer = (props) => {
                     <Divider />
                 </Grid>
                 <Grid item xs sx={{ overflowY: "auto" }}>
-                    <LoaderBoundary loading={props.isLoading}>
+                    <LoaderBoundary loading={isLoading}>
                         <List disablePadding>
-                            {props.chatList.map((chat, idx) => {
-                                const isMe = chat?.messages[0]?.user?.id === auth.user.id;
-                                const isGroup = chat?.isGroup;
-                                const groupName = chat?.title;
+                            {chats.map((chat, idx) => {
+                                const isMe = chat?.messages[0]?.user?.id === user.id;
+                                const isGroup = chat.isGroup;
+                                const groupName = chat.title;
                                 const avatar = isGroup ? chat?.avatar : chat?.users[0]?.avatar;
                                 const lastMessage = chat?.messages[0]?.text;
                                 const lastMessageUser = chat?.messages[0]?.user?.firstName;
@@ -59,32 +72,25 @@ const ChatListContainer = (props) => {
                                 const fullName = firstName + " " + lastName;
                                 const displayName = isGroup ? groupName : fullName;
                                 const lastMsgDisplay = `${isMe ? "Me" : lastMessageUser}: ${lastMessage}`;
-                                const animationDelay = 300 * (idx + 1);
-                                const isOnline = isGroup ? false : chat?.users[0]?.isOnline;
+                                const animationDelay = (idx + 1) * 300;
                                 
                                 return (
-                                    <Fade in timeout={animationDelay} key={chat.id}>
+                                    <Fade in timeout={animationDelay} key={idx}>
                                         <ListItemButton
                                             divider
-                                            selected={props.activeChat?.id === chat.id}
-                                            onClick={() => {
-                                                props.setActiveChat({
-                                                    id: chat.id,
-                                                    avatar: avatar,
-                                                    title: displayName,
-                                                    isGroup: isGroup
-                                                })
-                                            }}
+                                            selected={activeChatId === chat.id}
+                                            onClick={() => dispatch({
+                                                type: types.SET_ACTIVE_CHAT, 
+                                                payload: chat.id
+                                            })}
                                         >
-                                            <ListItemAvatar>
-                                                <Badge color="success" overlap="circular" variant="dot" invisible={isOnline ? false : true}>
-                                                    <Avatar src={avatar} />
-                                                </Badge>
+                                            <ListItemAvatar> 
+                                                <Avatar src={avatar} />
                                             </ListItemAvatar>
                                             <ListItemText
                                                 primary={displayName}
-                                                primaryTypographyProps={classes.primaryText}
                                                 secondary={truncate(lastMsgDisplay, 40)}
+                                                primaryTypographyProps={classes.primaryText}
                                                 secondaryTypographyProps={classes.secondaryText}
                                             />
                                         </ListItemButton>
@@ -99,4 +105,4 @@ const ChatListContainer = (props) => {
     );
 };
 
-export default ChatListContainer;
+export default ConversationList;

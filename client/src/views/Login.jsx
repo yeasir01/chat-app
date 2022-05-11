@@ -1,5 +1,4 @@
 import React, { useReducer } from "react";
-import { Link as RouterLink, useNavigate, useLocation } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -12,46 +11,44 @@ import Grid from "@mui/material/Grid";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Copyright from "../components/Copyright.jsx";
-import AnimatedAlert from "../components/AnimatedAlert.jsx";
-import useAuth from "../hooks/useAuth.jsx";
-import {
-    loginTypes,
-    loginReducer,
-    INITIAL_LOGIN_STATE,
-} from "../reducers/login-reducer.js";
-
+import CollapsibleAlert from "../components/CollapsibleAlert.jsx";
+import { loginTypes, loginReducer, INITIAL_LOGIN_STATE, } from "../reducers/login-reducer.js";
+import { useStore, types } from "../hooks/useStore.jsx";
+import { Link as RouterLink } from "react-router-dom";
 import background from "../assets/images/bg.svg";
 
 const Login = () => {
-    const [state, dispatch] = useReducer(loginReducer, INITIAL_LOGIN_STATE);
+    const [formData, formDispatch] = useReducer(loginReducer, INITIAL_LOGIN_STATE);
+    const store = useStore(state=>({dispatch: state.dispatch}));
 
-    const auth = useAuth();
-    const navigate = useNavigate();
-    const location = useLocation();
-
-    const from = location.state?.from?.pathname || "/";
-    const serverValError = auth.error?.validationErrors;
-
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        auth.login(state);
-    };
 
-    React.useEffect(() => {
-        if (auth.isAuthenticated) {
-            navigate(from, { replace: true });
-        }
-    }, [auth, from, navigate]);
+        try {
+            const response = await fetch("/api/auth/login", {
+                method: "POST",
+                body: JSON.stringify(formData.values),
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            const data = await response.json();
+
+            if (data.validationErrors) {
+               return formDispatch({type: loginTypes.SET_ERRORS, payload: data.validationErrors})
+            }
+            
+            store.dispatch({type: types.SET_USER, payload: data.user})
+            
+        } catch (err) {
+            console.log("an error was thrown");
+        }   
+    };
 
     return (
         <Grid container component="main" sx={{ minHeight: "100vh" }}>
-            <Grid
-                item
-                xs={false}
-                sm={5}
-                md={6}
-                lg={7}
-                sx={{
+            <Grid item xs={false} sm={5} md={6} lg={7} sx={{
                     backgroundImage: `url(${background})`,
                     backgroundRepeat: "no-repeat",
                     backgroundColor: (t) =>
@@ -87,8 +84,8 @@ const Login = () => {
                     <Typography component="h1" variant="h5">
                         Sign in
                     </Typography>
-                    <AnimatedAlert
-                        message={auth.error?.statusText}
+                    <CollapsibleAlert
+                        message={" *********** Server validation here *************"}
                         severity="error"
                     />
                     <Box
@@ -106,15 +103,15 @@ const Login = () => {
                             name="email"
                             autoComplete="email"
                             autoFocus
-                            value={state.email}
+                            value={formData.values.email}
                             onChange={(e) => {
-                                dispatch({
+                                formDispatch({
                                     type: loginTypes.SET_EMAIL,
                                     payload: e.target.value,
                                 });
                             }}
-                            helperText={serverValError?.email}
-                            error={serverValError?.email ? true : false}
+                            helperText={formData.errors.email}
+                            error={Boolean(formData.errors.email)}
                         />
                         <TextField
                             margin="normal"
@@ -125,15 +122,15 @@ const Login = () => {
                             type="password"
                             id="password"
                             autoComplete="current-password"
-                            value={state.password}
+                            value={formData.values.password}
                             onChange={(e) => {
-                                dispatch({
+                                formDispatch({
                                     type: loginTypes.SET_PASSWORD,
                                     payload: e.target.value,
                                 });
                             }}
-                            helperText={serverValError?.password}
-                            error={serverValError?.password ? true : false}
+                            helperText={formData.errors.password}
+                            error={Boolean(formData.errors.password)}
                         />
                         <FormControlLabel
                             control={
@@ -142,12 +139,12 @@ const Login = () => {
                                     color="primary"
                                     name="remember"
                                     onChange={(e) => {
-                                        dispatch({
+                                        formDispatch({
                                             type: loginTypes.SET_REMEMBER,
                                             payload: e.target.checked,
                                         });
                                     }}
-                                    checked={state.remember}
+                                    checked={formData.values.remember}
                                 />
                             }
                             label="Remember me"
@@ -158,7 +155,7 @@ const Login = () => {
                             variant="contained"
                             sx={{ mt: 1, mb: 2, py: 1.1 }}
                         >
-                            {auth.isLoading ? "Loading..." : "Submit"}
+                            {/* auth.isLoading ? "Loading..." : */ "Submit"}
                         </Button>
                         <Grid container>
                             <Grid item xs>

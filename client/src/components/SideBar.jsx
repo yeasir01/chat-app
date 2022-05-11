@@ -1,20 +1,20 @@
-import React from 'react';
-import Paper from '@mui/material/Paper';
-import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItem from '@mui/material/ListItem';
-import List from '@mui/material/List';
-import ManageAccountsOutlinedIcon from '@mui/icons-material/ManageAccountsOutlined';
-import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
-import SettingsBrightnessOutlinedIcon from '@mui/icons-material/SettingsBrightnessOutlined';
-import LogoutIcon from '@mui/icons-material/Logout';
+import React from "react";
+import Paper from "@mui/material/Paper";
+import ForumOutlinedIcon from "@mui/icons-material/ForumOutlined";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItem from "@mui/material/ListItem";
+import List from "@mui/material/List";
+import ManageAccountsOutlinedIcon from "@mui/icons-material/ManageAccountsOutlined";
+import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
+import SettingsBrightnessOutlinedIcon from "@mui/icons-material/SettingsBrightnessOutlined";
+import LogoutIcon from "@mui/icons-material/Logout";
 import useTheme from "../hooks/useTheme.jsx";
-import useAuth from "../hooks/useAuth.jsx";
-import Divider from '@mui/material/Divider';
-import Typography from '@mui/material/Typography';
+import Divider from "@mui/material/Divider";
+import Typography from "@mui/material/Typography";
 import { Link, useLocation } from "react-router-dom";
+import { useStore, types } from "../hooks/useStore.jsx";
 
-const useStyle = () =>({
+const useStyle = () => ({
     root: {
         height: 1,
         display: "flex",
@@ -25,7 +25,6 @@ const useStyle = () =>({
     listItem: {
         display: "flex",
         flexDirection: "column",
-        
     },
     listItemButton: {
         borderRadius: 5,
@@ -35,58 +34,91 @@ const useStyle = () =>({
             backgroundColor: "primary.main",
             color: "primary.contrastText",
             "&:hover": {
-                backgroundColor: "primary.light"
-            }
-        }
-    }
+                backgroundColor: "primary.light",
+            },
+        },
+    },
 });
 
 const SideBar = () => {
-    const [ changeTheme ] = useTheme();
-    const { logout } = useAuth();
+    const [changeTheme] = useTheme();
     const location = useLocation();
+    const dispatch = useStore(state => state.dispatch);
 
     const classes = useStyle();
 
+    const logout = async () => {
+        await fetch("/api/auth/logout", {
+            method: "DELETE",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        dispatch({ type: types.RESET });
+    };
+
     return (
         <Paper elevation={1} sx={classes.root}>
-            <List>             
+            <List>
                 <ListItem sx={classes.listItem}>
-                    <ListItemButton sx={classes.listItemButton} selected={location.pathname === "/chats"} component={Link} to="/chats" >
-                        <ForumOutlinedIcon/>
+                    <ListItemButton
+                        sx={classes.listItemButton}
+                        selected={location.pathname === "/chats"}
+                        component={Link}
+                        to="/chats"
+                    >
+                        <ForumOutlinedIcon />
                     </ListItemButton>
-                    <Typography variant='caption'>Chats</Typography>
+                    <Typography variant="caption">Chats</Typography>
                 </ListItem>
                 <ListItem sx={classes.listItem}>
-                    <ListItemButton sx={classes.listItemButton} selected={location.pathname === "/people"} component={Link} to="/people">
+                    <ListItemButton
+                        sx={classes.listItemButton}
+                        selected={location.pathname === "/people"}
+                        component={Link}
+                        to="/people"
+                    >
                         <PeopleAltOutlinedIcon />
                     </ListItemButton>
-                    <Typography variant='caption'>People</Typography>
+                    <Typography variant="caption">People</Typography>
                 </ListItem>
                 <ListItem sx={classes.listItem}>
-                    <ListItemButton sx={classes.listItemButton} selected={location.pathname === "/profile"} component={Link} to="/profile">
+                    <ListItemButton
+                        sx={classes.listItemButton}
+                        selected={location.pathname === "/profile"}
+                        component={Link}
+                        to="/profile"
+                    >
                         <ManageAccountsOutlinedIcon />
                     </ListItemButton>
-                    <Typography variant='caption'>Profile</Typography>
+                    <Typography variant="caption">Profile</Typography>
                 </ListItem>
-                <ListItem sx={classes.listItem} >
-                    <ListItemButton sx={classes.listItemButton} onClick={changeTheme}>
+                <ListItem sx={classes.listItem}>
+                    <ListItemButton
+                        sx={classes.listItemButton}
+                        onClick={changeTheme}
+                    >
                         <SettingsBrightnessOutlinedIcon />
                     </ListItemButton>
-                    <Typography variant='caption'>Theme</Typography>
+                    <Typography variant="caption">Theme</Typography>
                 </ListItem>
             </List>
             <List>
                 <Divider variant="middle" />
-                <ListItem sx={classes.listItem} >
-                    <ListItemButton sx={classes.listItemButton} onClick={logout}>
+                <ListItem sx={classes.listItem}>
+                    <ListItemButton
+                        sx={classes.listItemButton}
+                        onClick={logout}
+                    >
                         <LogoutIcon />
                     </ListItemButton>
-                    <Typography variant='caption'>Sign Out</Typography>
+                    <Typography variant="caption">Sign Out</Typography>
                 </ListItem>
             </List>
         </Paper>
-    )
+    );
 };
 
 export default SideBar;

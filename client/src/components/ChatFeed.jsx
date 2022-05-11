@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import Box from "@mui/system/Box";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
@@ -13,7 +13,7 @@ import MessageBubbles from "./MessageBubbles.jsx";
 import ListItemText from "@mui/material/ListItemText";
 import EmojiComponent from "./EmojiComponent.jsx";
 import LoaderBoundary from "./LoaderBoundary.jsx";
-import useAuth from "../hooks/useAuth.jsx";
+import { useStore, types } from "../hooks/useStore.jsx";
 import useFetch from "../hooks/useFetch.jsx";
 
 const useStyles = () => ({
@@ -51,36 +51,42 @@ const useStyles = () => ({
     },
 });
 
-const keyPress = {
-    Shift: false,
-    Enter: false,
-};
-
-const ChatFeed = ({ socket, activeChat }) => {
+const ChatFeed = () => {
     const [input, setInput] = React.useState("");
-    const [messages, setMessages] = React.useState([]);
 
-    const { response, isLoading, request } = useFetch();
-    const auth = useAuth();
+    const user = useStore(state=> state.user);
+    const dispatch = useStore(state=> state.dispatch);
+    const activeChatId = useStore(state=> state.activeChatId);
+    
+    const { response, isLoading, fetchRequest } = useFetch();
+
+    const keyPress = useRef({
+        Shift: false,
+        Enter: false,
+    });
+
     const classes = useStyles();
 
-    React.useEffect(() => {
+/*     React.useEffect(() => {
         socket.on("message:receive", (message) => {
-            setMessages((prevMsgs) => [...prevMsgs, message]);
+            dispatch({type: types.ADD_CHAT, payload: message})
         });
-    }, [socket]);
+    }, [socket]); */
 
     React.useEffect(() => {
         if (response.ok) {
-            setMessages(response.data);
+            dispatch({
+                type: types.SET_MESSAGES, 
+                payload: response.data
+            })
         }
     }, [response]);
 
     React.useEffect(() => {
-        if (activeChat.id) {
-            request(`/api/messages?chat-id=${activeChat.id}`);
+        if (activeChatId) {
+            fetchRequest(`/api/messages?chat-id=${activeChatId}`);
         }
-    }, [activeChat, request]);
+    }, [activeChatId, fetchRequest]);
 
     const sendMessage = () => {
         if (input.trim() === "") return;
@@ -88,24 +94,24 @@ const ChatFeed = ({ socket, activeChat }) => {
         const isoDate = new Date().toISOString();
 
         const message = {
-            chatId: activeChat.id,
+            chatId: activeChatId,
             text: input,
             createdAt: isoDate,
-            user: auth.user,
+            user: user,
         };
 
-        socket.emit("message:send", message);
+        //socket.emit("message:send", message);
 
-        setMessages((prevMsgs) => [...prevMsgs, message]);
+        dispatch({type: types.ADD_MESSAGE, payload: message});
         setInput("");
     };
 
     const handleKeyDown = (event) => {
         if (event.key === "Shift" || event.key === "Enter") {
-            keyPress[event.key] = true;
+            keyPress.current[event.key] = true;
         }
 
-        if (keyPress["Enter"] && !keyPress["Shift"]) {
+        if (keyPress.current["Enter"] && !keyPress.current["Shift"]) {
             event.preventDefault();
             sendMessage();
         }
@@ -113,7 +119,7 @@ const ChatFeed = ({ socket, activeChat }) => {
 
     const handleKeyUp = (event) => {
         if (event.key === "Shift" || event.key === "Enter") {
-            keyPress[event.key] = false;
+            keyPress.current[event.key] = false;
         }
     };
 
@@ -121,17 +127,17 @@ const ChatFeed = ({ socket, activeChat }) => {
         setInput(event.target.value);
     };
 
-    const handleEmojiSelection = React.useCallback((emoji) => {
+    const handleEmojiSelection = (emoji) => {
         setInput((prevState) => prevState + emoji);
-    }, []);
+    };
 
     return (
         <Paper elevation={1} sx={classes.root}>
             <Grid container direction="column" height={1}>
                 <Grid item sx={classes.headerGroup}>
                     <Box sx={classes.headerItem}>
-                        <Avatar sx={classes.avatar} src={activeChat.avatar} />
-                        <ListItemText primary={activeChat.title} />
+                        <Avatar sx={classes.avatar} src={"AvatarLinkHere"} />
+                        <ListItemText primary={"Title Here"} />
                     </Box>
                     <Box>
                         <IconButton>
@@ -144,7 +150,7 @@ const ChatFeed = ({ socket, activeChat }) => {
                 </Grid>
                 <Grid item xs padding={4} sx={{ overflowY: "auto" }}>
                     <LoaderBoundary loading={isLoading}>
-                        <MessageBubbles messages={messages} />
+                        <MessageBubbles/>
                     </LoaderBoundary>
                 </Grid>
                 <Grid item>
@@ -160,9 +166,7 @@ const ChatFeed = ({ socket, activeChat }) => {
                         gap={1}
                     >
                         <Grid item>
-                            <EmojiComponent
-                                handleSelect={handleEmojiSelection}
-                            />
+                            <EmojiComponent handleSelect={handleEmojiSelection} />
                         </Grid>
                         <Grid item xs>
                             <TextField

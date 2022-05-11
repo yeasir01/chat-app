@@ -23,7 +23,7 @@ const useStyles = () => ({
     },
 });
 
-const PeopleList = (props) => {
+const ProfileList = (props) => {
     const classes = useStyles();
     
     return (
@@ -38,7 +38,7 @@ const PeopleList = (props) => {
                 <Grid item xs sx={{ overflowY: "auto" }}>
                     <LoaderBoundary loading={props.isLoading}>
                         <List disablePadding>
-                          Hello
+                          Profile List Here
                         </List>
                     </LoaderBoundary>
                 </Grid>
@@ -47,4 +47,4 @@ const PeopleList = (props) => {
     );
 };
 
-export default PeopleList;
+export default ProfileList;

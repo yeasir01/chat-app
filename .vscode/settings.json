@@ -7,7 +7,8 @@
         "PGUSER",
         "resave",
         "sequalize",
-        "UUIDV"
+        "UUIDV",
+        "zustand"
     ],
     "liveSassCompile.settings.excludeList": [
         "**/node_modules/**",

@@ -1,6 +1,6 @@
 import React from "react";
 import SideBar from "../components/SideBar.jsx";
-import ChatList from "../components/ChatList.jsx";
+import ConversationList from "../components/ConversationList.jsx";
 import ChatFeed from "../components/ChatFeed.jsx";
 import NoChatSelected from "../components/NoChatSelected.jsx";
 import Grid from "@mui/material/Grid";
@@ -12,9 +12,9 @@ import { Outlet } from "react-router-dom";
 
 const useStyles = () => ({
     root: {
-        gap: 2,
         height: "100vh",
         padding: 2,
+        gap: 2
     },
     side: {
         background: "primary.main",
@@ -29,16 +29,12 @@ const useStyles = () => ({
 });
 
 const ChatsView = () => {
-    const [chatList, setChatList] = React.useState([]);
-    const [activeChat, setActiveChat] = React.useState(null);
-    //const [notification, setNotification] = React.useState({});
-    const [connected, setConnected] = React.useState(false);
     const [openSnackBar, setOpenSnackBar] = React.useState(false);
 
     const { response, isLoading } = useFetch("/api/chats");
 
-    const socket = React.useRef(null);
     const classes = useStyles();
+    /* const socket = React.useRef(null);
 
     React.useEffect(() => {
         if (response.ok) {
@@ -71,7 +67,7 @@ const ChatsView = () => {
         socket.current.emit("chat:leave", () => {
             socket.current.emit("chat:join", activeChat.id);
         });
-    }, [activeChat]);
+    }, [activeChat]); */
 
     const handleClose = () => {
         setOpenSnackBar(false);
@@ -79,43 +75,10 @@ const ChatsView = () => {
 
     return (
         <Grid container sx={classes.root}>
-            <Grid item sx={classes.side}>
+            <Grid item >
                 <SideBar />
             </Grid>
-            <Grid item sx={classes.chatList}>
-                {/* <ChatList
-                    setActiveChat={setActiveChat}
-                    activeChat={activeChat}
-                    chatList={chatList}
-                    isLoading={isLoading}
-                /> */}
-
-                <Outlet/>
-            </Grid>
-            <Grid item xs sx={classes.chatFeed}>
-                {Boolean(activeChat) ? (
-                    <ChatFeed activeChat={activeChat} socket={socket.current} />
-                ) : (
-                    <NoChatSelected />
-                )}
-
-                <Snackbar
-                    open={openSnackBar}
-                    autoHideDuration={connected ? 3000 : null}
-                    anchorOrigin={{ vertical: "top", horizontal: "center" }}
-                    onClose={handleClose}
-                >
-                    <Alert
-                        onClose={handleClose}
-                        severity={connected ? "success" : "error"}
-                        sx={{ borderRadius: 10, width: "100%" }}
-                    >
-                        {connected
-                            ? "Ready to chatter!"
-                            : "Lost connection attempting to reconnecting..."}
-                    </Alert>
-                </Snackbar>
-            </Grid>
+            <Outlet/>
         </Grid>
     );
 };

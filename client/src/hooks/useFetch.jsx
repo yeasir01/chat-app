@@ -45,7 +45,7 @@ const useFetch = (URL = "", CONFIG = { ...defaultConfig }, INITIAL_DATA = []) =>
         }
     }, []);
 
-    const request = useCallback(
+    const fetchRequest = useCallback(
         (url = "", config = { ...defaultConfig }, initialData = []) => {
             setResponse(initialState(initialData));
             setError(null);
@@ -101,7 +101,7 @@ const useFetch = (URL = "", CONFIG = { ...defaultConfig }, INITIAL_DATA = []) =>
         response,
         error,
         isLoading,
-        request,
+        fetchRequest,
     };
 };
 

@@ -3,7 +3,7 @@ import Alert from '@mui/material/Alert';
 import Collapse from '@mui/material/Collapse';
 import Box from '@mui/material/Box';
 
-const AnimatedAlert = ({ message, severity="error" }) => {
+const CollapsibleAlert = ({ message, severity="error" }) => {
 
     const open = Boolean(message);
 
@@ -18,4 +18,4 @@ const AnimatedAlert = ({ message, severity="error" }) => {
     );
 };
 
-export default AnimatedAlert;
+export default CollapsibleAlert;

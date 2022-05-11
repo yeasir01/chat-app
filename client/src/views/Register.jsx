@@ -1,7 +1,7 @@
 import React, { useReducer } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import useFetch from "../hooks/useFetch.jsx";
-import useAuth from "../hooks/useAuth.jsx";
+import useStore from "../hooks/useStore.jsx";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -14,7 +14,7 @@ import HowToRegOutlinedIcon from "@mui/icons-material/HowToRegOutlined";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import Copyright from "../components/Copyright.jsx";
-import AnimatedAlert from "../components/AnimatedAlert.jsx";
+import CollapsibleAlert from "../components/CollapsibleAlert.jsx";
 import background from "../assets/images/bg.svg";
 import { INITIAL_REGISTER_STATE, registerReducer, registerTypes } from "../reducers/register-reducer.js";
 
@@ -22,10 +22,10 @@ const Register = () => {
     const [state, dispatch] = useReducer( registerReducer, INITIAL_REGISTER_STATE );
     const { response, error, isLoading, request } = useFetch();
     
-    const auth = useAuth();
+    const isAuthenticated = useStore((state)=>(state.isAuthenticated));
     const navigate = useNavigate();
 
-    const serverValError = auth.error?.validationErrors;
+    const serverValError = {}; //FIX the server side validation errors
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -41,11 +41,10 @@ const Register = () => {
         }
     }, [navigate, response]);
 
-    React.useEffect(() => {
-        if (auth.isAuthenticated) {
-            return navigate("/", { replace: true });
-        }
-    }, [auth, navigate]);
+
+    if (isAuthenticated) {
+        return navigate("/", { replace: true });
+    }
 
     return (
         <Box
@@ -83,7 +82,7 @@ const Register = () => {
                     <Typography component="h1" variant="h5">
                         Sign up
                     </Typography>
-                    <AnimatedAlert
+                    <CollapsibleAlert
                         message={error?.statusText}
                         severity="error"
                     />

@@ -33,11 +33,11 @@ const useStyles = () => ({
   }
 })
 
-const Loader = (props) => {
+const Loader = ({loading, children}) => {
   
   const classes = useStyles();
 
-  if (props.loading){
+  if (loading) {
     return (
       <Box sx={classes.root}>
           <Box>
@@ -55,11 +55,7 @@ const Loader = (props) => {
     )
   }
 
-  return (
-    <>
-      {props.children}
-    </>
-  )
+  return <>{children}</>
 }
 
 export default React.memo(Loader);

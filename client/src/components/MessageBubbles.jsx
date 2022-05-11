@@ -2,12 +2,13 @@ import React from "react";
 import Box from "@mui/system/Box";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
-import useAuth from "../hooks/useAuth.jsx";
+import useStore from "../hooks/useStore.jsx";
 import Avatar from '@mui/material/Avatar';
 import { getInitials, convertTime } from "../util/helpers.js";
 
-const MessageBubbles = ({messages}) => {
-    const auth = useAuth();
+const MessageBubbles = () => {
+    const user = useStore(state => state.user);
+    const messages = useStore(state => state.messages);
 
     const lastMessageRef = React.useRef(null);
 
@@ -38,11 +39,11 @@ const MessageBubbles = ({messages}) => {
             fontSize: ".7rem"
         }
     });
-
+    
     return (
         <>
             {messages.map((message, index) => {
-                const isOwner = auth.user.id === message.user.id;
+                const isOwner = user.id === message.user.id;
                 const firstName = message.user.firstName || "";
                 const lastName = message.user.lastName || "";
                 const avatar = message.user.avatar || "";
@@ -67,6 +68,7 @@ const MessageBubbles = ({messages}) => {
                     </Grid>
                 );
             })}
+
             <div ref={lastMessageRef}></div>
         </>
     )
