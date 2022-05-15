@@ -2,8 +2,8 @@ import React from "react";
 import ConversationList from "../components/ConversationList.jsx";
 import ChatFeed from "../components/ChatFeed.jsx";
 import NoChatSelected from "../components/NoChatSelected.jsx";
-import Grid from "@mui/material/Grid";
 import useStore from "../hooks/useStore.jsx";
+import Grid from "@mui/material/Grid";
 
 const useStyles = () => ({
     root: {
@@ -25,7 +25,7 @@ const useStyles = () => ({
 
 const ChatLayout = () => {
 
-    const activeChatId = useStore(state=>(state.activeChatId));
+    const activeChatId = useStore(state=> state.activeChatId);
     const classes = useStyles();
 
     return (
@@ -41,27 +41,3 @@ const ChatLayout = () => {
 };
 
 export default ChatLayout;
-
-
-/* {Boolean(activeChat) ? (
-        <ChatFeed activeChat={activeChat} socket={socket.current} />
-    ) : (
-        <NoChatSelected />
-    )}
-
-    <Snackbar
-        open={openSnackBar}
-        autoHideDuration={connected ? 3000 : null}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        onClose={handleClose}
-    >
-        <Alert
-            onClose={handleClose}
-            severity={connected ? "success" : "error"}
-            sx={{ borderRadius: 10, width: "100%" }}
-        >
-            {connected
-                ? "Ready to chatter!"
-                : "Lost connection attempting to reconnecting..."}
-        </Alert>
-    </Snackbar> */

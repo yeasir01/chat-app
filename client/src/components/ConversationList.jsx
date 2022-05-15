@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 import ListItemText from "@mui/material/ListItemText";
-import Avatar from "@mui/material/Avatar";
 import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
@@ -13,6 +12,7 @@ import Fade from "@mui/material/Fade";
 import LoaderBoundary from "./LoaderBoundary.jsx";
 import { useStore, types } from "../hooks/useStore.jsx";
 import useFetch from "../hooks/useFetch.jsx";
+import CustomAvatar from "../components/CustomAvatar.jsx";
 
 const useStyles = () => ({
     root: {
@@ -35,18 +35,18 @@ const ConversationList = () => {
     const user = useStore((state) => state.user);
     const dispatch = useStore((state) => state.dispatch);
     const chats = useStore((state) => state.chats);
+    //const messages = useStore((state) => state.messages);
     const activeChatId = useStore((state) => state.activeChatId);
 
     const { response, isLoading } = useFetch("/api/chats");
 
     const classes = useStyles();
-
+    
     useEffect(()=>{
-        if(response.ok){
+        if (response.ok) {
             dispatch({type: types.SET_CHATS, payload: response.data.chats})
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[response])
+    },[response, dispatch])
 
     return (
         <Paper elevation={1} sx={classes.root}>
@@ -71,7 +71,7 @@ const ConversationList = () => {
                                 const lastName = chat?.users[0]?.lastName;
                                 const fullName = firstName + " " + lastName;
                                 const displayName = isGroup ? groupName : fullName;
-                                const lastMsgDisplay = `${isMe ? "Me" : lastMessageUser}: ${lastMessage}`;
+                                const lastMsgDisplay = `${isMe ? "me" : lastMessageUser}: ${lastMessage}`;
                                 const animationDelay = (idx + 1) * 300;
                                 
                                 return (
@@ -85,11 +85,13 @@ const ConversationList = () => {
                                             })}
                                         >
                                             <ListItemAvatar> 
-                                                <Avatar src={avatar} />
+                                                <CustomAvatar src={avatar} >
+                                                    {chat.isGroup ? chat.title : `${chat.users[0].firstName} ${chat.users[0].lastName}`}
+                                                </CustomAvatar>
                                             </ListItemAvatar>
                                             <ListItemText
                                                 primary={displayName}
-                                                secondary={truncate(lastMsgDisplay, 40)}
+                                                secondary={truncate(lastMsgDisplay, 35)}
                                                 primaryTypographyProps={classes.primaryText}
                                                 secondaryTypographyProps={classes.secondaryText}
                                             />

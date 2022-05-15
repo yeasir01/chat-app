@@ -1,4 +1,4 @@
-import React, { useReducer } from "react";
+import React, { useReducer, useEffect } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -16,34 +16,35 @@ import { loginTypes, loginReducer, INITIAL_LOGIN_STATE, } from "../reducers/logi
 import { useStore, types } from "../hooks/useStore.jsx";
 import { Link as RouterLink } from "react-router-dom";
 import background from "../assets/images/bg.svg";
+import useFetch from "../hooks/useFetch.jsx";
 
 const Login = () => {
     const [formData, formDispatch] = useReducer(loginReducer, INITIAL_LOGIN_STATE);
-    const store = useStore(state=>({dispatch: state.dispatch}));
+    const { response, isLoading, fetchRequest } = useFetch();
+    const dispatch = useStore(state=> state.dispatch);
 
-    const handleSubmit = async (event) => {
+    useEffect(()=>{
+        if (response.data.validationErrors) {
+            return formDispatch({
+                type: loginTypes.SET_ERRORS, 
+                payload: response.data.validationErrors
+            })
+        }
+
+        if (response.ok && response.data.user){
+            dispatch({type: types.SET_USER, payload: response.data.user})
+        }
+    }, [response, dispatch])
+
+    const handleSubmit = (event) => {
         event.preventDefault();
 
-        try {
-            const response = await fetch("/api/auth/login", {
-                method: "POST",
-                body: JSON.stringify(formData.values),
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
+        // do validation here...
 
-            const data = await response.json();
-
-            if (data.validationErrors) {
-               return formDispatch({type: loginTypes.SET_ERRORS, payload: data.validationErrors})
-            }
-            
-            store.dispatch({type: types.SET_USER, payload: data.user})
-            
-        } catch (err) {
-            console.log("an error was thrown");
-        }   
+        fetchRequest("/api/auth/login", {
+            method: "POST",
+            body: formData.values
+        }) 
     };
 
     return (
@@ -151,11 +152,12 @@ const Login = () => {
                         />
                         <Button
                             type="submit"
+                            disabled={isLoading}
                             fullWidth
                             variant="contained"
                             sx={{ mt: 1, mb: 2, py: 1.1 }}
                         >
-                            {/* auth.isLoading ? "Loading..." : */ "Submit"}
+                            {isLoading ? "Loading..." : "Submit"}
                         </Button>
                         <Grid container>
                             <Grid item xs>

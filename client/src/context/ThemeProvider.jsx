@@ -2,9 +2,9 @@ import { ThemeProvider as MUIProvider } from "@mui/material/styles";
 import { createContext, useState } from "react";
 import themes from "../themes/index.js";
 
-const ThemeContext = createContext({});
+export const ThemeContext = createContext({});
 
-export const ThemeProvider = ({ children }) => {
+const ThemeProvider = ({ children }) => {
     const [darkMode, setDarkMode] = useState(false);
 
     const toggleTheme = () => {
@@ -23,4 +23,5 @@ export const ThemeProvider = ({ children }) => {
     );
 };
 
-export default ThemeContext;
+export default ThemeProvider;
+

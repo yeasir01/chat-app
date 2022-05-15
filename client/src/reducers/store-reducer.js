@@ -1,5 +1,6 @@
 const types = {
     SET_USER: "SET_USER",
+    UPDATE_USER: "UPDATE_USER",
 
     ADD_CHAT: "ADD_CHAT",
     DELETE_CHAT: "DELETE_CHAT",
@@ -25,8 +26,11 @@ const types = {
     DELETE_ACTIVE_CHAT: "DELETE_ACTIVE_CHAT",
     
     SET_CONNECTED: "SET_CONNECTED",
+
+    OPEN_SNACKBAR: "OPEN_SNACKBAR",
+    CLOSE_SNACKBAR: "CLOSE_SNACKBAR",
     
-    RESET: "RESET",
+    RESET_STATE: "RESET",
 };
 
 const INITIAL_STATE = {
@@ -40,22 +44,31 @@ const INITIAL_STATE = {
     },
     isAuthenticated: false,
     chats: [],
-    chatMembers: [],
+    members: [],
     notifications: [],
     messages: [],
     activeChatId: null,
     isConnected: false,
-    errors: []
+    snackbar: {
+        isOpen: false,
+        message: "",
+        severity: "info",
+        duration: null
+    },
 };
 
-const updateOneRecord = (prevState, payload) => {
-    const idx = prevState.findIndex((item) => item.id === payload.id);
+const updatedRecord = (prevState, payload) => {
+    const idx = prevState.findIndex(item => item.id === payload.id);
     if (idx === -1) return prevState;
 
-    const newState = [...prevState];
-    newState[idx] = { ...prevState[idx], ...payload };
+    const state = [...prevState];
+    state[idx] = {...state[idx], ...payload};
 
-    return newState;
+    return state;
+};
+
+const removeRecord = (prevState, payload) => {
+    return prevState.filter(item=> item.id !== payload.id);
 };
 
 const reducer = (state, action) => {
@@ -66,6 +79,12 @@ const reducer = (state, action) => {
                 isAuthenticated: true,
                 user: action.payload,
             };
+        case types.UPDATE_USER:
+            return {
+                ...state,
+                isAuthenticated: true,
+                user: {...state.user, ...action.payload},
+            };
         case types.ADD_CHAT:
             return {
                 ...state,
@@ -74,36 +93,60 @@ const reducer = (state, action) => {
         case types.DELETE_CHAT:
             return {
                 ...state,
-                chats: state.chats.filter(
-                    (item) => item.id !== action.payload.id
-                ),
+                activeChatId: null,
+                chats: removeRecord(state.chats, action.payload),
             };
         case types.UPDATE_CHAT:
             return {
                 ...state,
-                chats: updateOneRecord(state.chats, action.payload),
+                chats: updatedRecord(state.chats, action.payload),
             };
         case types.SET_CHATS:
             return {
                 ...state,
                 chats: action.payload,
             };
+        case types.SET_ACTIVE_CHAT:
+            return {
+                ...state,
+                activeChatId: action.payload,
+            };
+
+
+        case types.SET_CONNECTED:
+            return {
+                ...state,
+                isConnected: action.payload
+            };
         case types.ADD_MESSAGE:
             return {
                 ...state,
-                messages: [...state.messages, action.payload],
+                messages: [...state.messages, action.payload]
             };
         case types.SET_MESSAGES:
             return {
                 ...state,
                 messages: action.payload,
             };
-        case types.SET_ACTIVE_CHAT:
+        
+        case types.OPEN_SNACKBAR:
             return {
                 ...state,
-                activeChatId: action.payload,
+                snackbar: {
+                    ...state.snackbar,
+                    ...action.payload,
+                    isOpen: true
+                },
             };
-        case types.RESET:
+        case types.CLOSE_SNACKBAR:
+            return {
+                ...state,
+                snackbar: {
+                    ...INITIAL_STATE.snackbar
+                },
+            };
+            
+        case types.RESET_STATE:
             return INITIAL_STATE;
         default:
             return state;

@@ -22,7 +22,6 @@ const Register = () => {
     const [state, dispatch] = useReducer( registerReducer, INITIAL_REGISTER_STATE );
     const { response, error, isLoading, request } = useFetch();
     
-    const isAuthenticated = useStore((state)=>(state.isAuthenticated));
     const navigate = useNavigate();
 
     const serverValError = {}; //FIX the server side validation errors
@@ -40,11 +39,6 @@ const Register = () => {
             return navigate("/login", { replace: false });
         }
     }, [navigate, response]);
-
-
-    if (isAuthenticated) {
-        return navigate("/", { replace: true });
-    }
 
     return (
         <Box

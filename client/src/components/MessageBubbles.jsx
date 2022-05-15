@@ -4,7 +4,6 @@ import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import useStore from "../hooks/useStore.jsx";
 import Avatar from '@mui/material/Avatar';
-import { getInitials, convertTime } from "../util/helpers.js";
 
 const MessageBubbles = () => {
     const user = useStore(state => state.user);
@@ -44,31 +43,28 @@ const MessageBubbles = () => {
         <>
             {messages.map((message, index) => {
                 const isOwner = user.id === message.user.id;
-                const firstName = message.user.firstName || "";
-                const lastName = message.user.lastName || "";
-                const avatar = message.user.avatar || "";
-                const initials = isOwner ? "ME" : getInitials(firstName, lastName);
-                const time = convertTime(message.createdAt);
+                const firstName = message.user.firstName;
+                const lastName = message.user.lastName;
+                const avatar = message.user.avatar;
+                const fullName = isOwner ? "me" : firstName.split(' ')[0][0] + lastName.split(' ')[0][0];
 
                 const classes = styles(isOwner);
                 
                 return (
                     <Grid container width={1} justifyContent={isOwner ? "flex-end" : "flex-start"} key={index}>
-                        <Grid item sx={{maxWidth: 0.5, my: 1}}>
+                        <Grid item xs={12} lg={9} sx={{my: 1.5}}>
                             <Box sx={classes.wrapper}>
                                 <Avatar sx={{ width: 35, height: 35, fontSize: "1rem" }} src={avatar}>
-                                    {initials}
+                                    {fullName}
                                 </Avatar>
                                 <Box sx={classes.bubble}>
                                     <Typography variant="body1" sx={{whiteSpace: 'pre-line'}}>{message.text}</Typography>
-                                </Box>
-                                {/* <Typography variant="caption" sx={classes.date}>{time}</Typography> */}                       
+                                </Box>      
                             </Box>
                         </Grid>
                     </Grid>
                 );
             })}
-
             <div ref={lastMessageRef}></div>
         </>
     )

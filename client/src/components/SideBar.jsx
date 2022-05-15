@@ -56,7 +56,7 @@ const SideBar = () => {
             },
         });
 
-        dispatch({ type: types.RESET });
+        dispatch({ type: types.RESET_STATE });
     };
 
     return (

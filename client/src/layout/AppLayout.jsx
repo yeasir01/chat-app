@@ -1,20 +1,16 @@
-import React from "react";
+import { useEffect, createContext, useState } from "react";
 import SideBar from "../components/SideBar.jsx";
-import ConversationList from "../components/ConversationList.jsx";
-import ChatFeed from "../components/ChatFeed.jsx";
-import NoChatSelected from "../components/NoChatSelected.jsx";
 import Grid from "@mui/material/Grid";
-import io from "socket.io-client";
-import useFetch from "../hooks/useFetch.jsx";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
 import { Outlet } from "react-router-dom";
+import SnackBar from "../components/SnackBar.jsx";
+import { useStore, types } from "../hooks/useStore.jsx";
+import io from "socket.io-client";
 
 const useStyles = () => ({
     root: {
         height: "100vh",
         padding: 2,
-        gap: 2
+        gap: 2,
     },
     side: {
         background: "primary.main",
@@ -28,59 +24,82 @@ const useStyles = () => ({
     },
 });
 
-const ChatsView = () => {
-    const [openSnackBar, setOpenSnackBar] = React.useState(false);
+export const SocketContext = createContext();
 
-    const { response, isLoading } = useFetch("/api/chats");
-
+const AppLayout = () => {
+    const [socket, setSocket] = useState(null);
+    
+    const dispatch = useStore((state) => state.dispatch);
+    const activeChatId = useStore((state) => state.activeChatId);
+    
     const classes = useStyles();
-    /* const socket = React.useRef(null);
 
-    React.useEffect(() => {
-        if (response.ok) {
-            setChatList(response.data.chats);
+    useEffect(() => {
+        if (!socket) {
+            return setSocket(io("/"));
         }
-    }, [response]);
+        
+        socket.on("connect", () => {
+            dispatch({ 
+                type: types.SET_CONNECTED, 
+                payload: true 
+            });
 
-    React.useEffect(() => {
-        socket.current = io("http://localhost:3000/");
-
-        socket.current.on("connect", () => {
-            setConnected(true);
-            setOpenSnackBar(true);
+            dispatch({
+                type: types.OPEN_SNACKBAR,
+                payload: {
+                    message: "Ready to chatter!",
+                    duration: 3000,
+                    severity: "success"
+                },
+            });
         });
 
-        socket.current.on("disconnect", () => {
-            setConnected(false);
-            setOpenSnackBar(true);
+        socket.on("disconnect", () => {
+            dispatch({ 
+                type: types.SET_CONNECTED, 
+                payload: false 
+            });
+
+            dispatch({
+                type: types.OPEN_SNACKBAR,
+                payload: {
+                    message: "Socket Error: Disconnected",
+                    severity: "error",
+                },
+            });
+        });
+
+        socket.on("message:receive", (message) => {
+            dispatch({
+                type: types.ADD_MESSAGE, 
+                payload: message
+            })
         });
 
         return () => {
-            socket.current.disconnect();
-            socket.current = null;
+            socket.disconnect();
         };
-    }, []);
+    }, [dispatch, socket]);
 
-    React.useEffect(() => {
-        if (!socket.current || !activeChat) return;
-
-        socket.current.emit("chat:leave", () => {
-            socket.current.emit("chat:join", activeChat.id);
-        });
-    }, [activeChat]); */
-
-    const handleClose = () => {
-        setOpenSnackBar(false);
-    };
+    useEffect(()=>{
+        if (!socket || !activeChatId) return;
+        socket.emit("chat:join", activeChatId)
+    },[activeChatId, socket])
 
     return (
-        <Grid container sx={classes.root}>
-            <Grid item >
-                <SideBar />
+        <SocketContext.Provider value={socket}>
+            <Grid container sx={classes.root}>
+                <Grid item>
+                    <SnackBar/>
+                </Grid>
+                <Grid item>
+                    <SideBar />
+                </Grid>
+                <Outlet/>
             </Grid>
-            <Outlet/>
-        </Grid>
+        </SocketContext.Provider>
     );
 };
 
-export default ChatsView;
+export default AppLayout;

@@ -1,8 +1,7 @@
-import React, { useRef } from "react";
+import React, { useRef, useContext } from "react";
 import Box from "@mui/system/Box";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
-import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
@@ -15,6 +14,8 @@ import EmojiComponent from "./EmojiComponent.jsx";
 import LoaderBoundary from "./LoaderBoundary.jsx";
 import { useStore, types } from "../hooks/useStore.jsx";
 import useFetch from "../hooks/useFetch.jsx";
+import { SocketContext } from "../layout/AppLayout.jsx"
+import CustomAvatar from "../components/CustomAvatar.jsx";
 
 const useStyles = () => ({
     root: {
@@ -57,7 +58,9 @@ const ChatFeed = () => {
     const user = useStore(state=> state.user);
     const dispatch = useStore(state=> state.dispatch);
     const activeChatId = useStore(state=> state.activeChatId);
-    
+    const chat = useStore(state=> state.getChat());
+
+    const socket = useContext(SocketContext);
     const { response, isLoading, fetchRequest } = useFetch();
 
     const keyPress = useRef({
@@ -67,12 +70,6 @@ const ChatFeed = () => {
 
     const classes = useStyles();
 
-/*     React.useEffect(() => {
-        socket.on("message:receive", (message) => {
-            dispatch({type: types.ADD_CHAT, payload: message})
-        });
-    }, [socket]); */
-
     React.useEffect(() => {
         if (response.ok) {
             dispatch({
@@ -80,10 +77,10 @@ const ChatFeed = () => {
                 payload: response.data
             })
         }
-    }, [response]);
+    }, [dispatch, response]);
 
     React.useEffect(() => {
-        if (activeChatId) {
+        if (activeChatId !== null) {
             fetchRequest(`/api/messages?chat-id=${activeChatId}`);
         }
     }, [activeChatId, fetchRequest]);
@@ -99,8 +96,8 @@ const ChatFeed = () => {
             createdAt: isoDate,
             user: user,
         };
-
-        //socket.emit("message:send", message);
+        
+        socket.emit("message:send", message);
 
         dispatch({type: types.ADD_MESSAGE, payload: message});
         setInput("");
@@ -136,8 +133,13 @@ const ChatFeed = () => {
             <Grid container direction="column" height={1}>
                 <Grid item sx={classes.headerGroup}>
                     <Box sx={classes.headerItem}>
-                        <Avatar sx={classes.avatar} src={"AvatarLinkHere"} />
-                        <ListItemText primary={"Title Here"} />
+                        <CustomAvatar sx={classes.avatar} src={chat.isGroup ? chat.avatar : chat.users[0].avatar}>
+                            {chat.isGroup ? chat.title : `${chat.users[0].firstName} ${chat.users[0].lastName}`}
+                        </ CustomAvatar>
+                        <ListItemText 
+                            primary={chat.isGroup ? chat.title : `${chat.users[0].firstName} ${chat.users[0].lastName}`} 
+                            secondary={(chat.users.length + 1) + " Members"}
+                        />
                     </Box>
                     <Box>
                         <IconButton>
