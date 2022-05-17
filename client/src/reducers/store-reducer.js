@@ -1,7 +1,8 @@
 const types = {
-    SET_USER: "SET_USER",
-    UPDATE_USER: "UPDATE_USER",
-
+    SET_AUTH_USER: "SET_AUTH_USER",
+    UPDATE_AUTH_USER: "UPDATE_AUTH_USER",
+    LOGOUT: "LOGOUT",
+    
     ADD_CHAT: "ADD_CHAT",
     DELETE_CHAT: "DELETE_CHAT",
     UPDATE_CHAT: "UPDATE_CHAT",
@@ -29,8 +30,6 @@ const types = {
 
     OPEN_SNACKBAR: "OPEN_SNACKBAR",
     CLOSE_SNACKBAR: "CLOSE_SNACKBAR",
-    
-    RESET_STATE: "RESET",
 };
 
 const INITIAL_STATE = {
@@ -44,9 +43,7 @@ const INITIAL_STATE = {
     },
     isAuthenticated: false,
     chats: [],
-    members: [],
     notifications: [],
-    messages: [],
     activeChatId: null,
     isConnected: false,
     snackbar: {
@@ -71,15 +68,28 @@ const removeRecord = (prevState, payload) => {
     return prevState.filter(item=> item.id !== payload.id);
 };
 
+const handleNewMessage = (prevState, payload) => {
+    const state = [...prevState];
+    const idx = state.findIndex(record => record.id === payload.chatId);
+    state[idx].messages.push(payload);
+    return state;
+};
+
+const handleNewMessages = (prevState, payload) => {
+    const state = [...prevState];
+    state[0].messages = payload;
+    return state;
+};
+
 const reducer = (state, action) => {
     switch (action.type) {
-        case types.SET_USER:
+        case types.SET_AUTH_USER:
             return {
                 ...state,
                 isAuthenticated: true,
                 user: action.payload,
             };
-        case types.UPDATE_USER:
+        case types.UPDATE_AUTH_USER:
             return {
                 ...state,
                 isAuthenticated: true,
@@ -121,12 +131,12 @@ const reducer = (state, action) => {
         case types.ADD_MESSAGE:
             return {
                 ...state,
-                messages: [...state.messages, action.payload]
+                chats: handleNewMessage(state.chats, action.payload)
             };
         case types.SET_MESSAGES:
             return {
                 ...state,
-                messages: action.payload,
+                chats: handleNewMessages(state.chats, action.payload),
             };
         
         case types.OPEN_SNACKBAR:
@@ -146,7 +156,7 @@ const reducer = (state, action) => {
                 },
             };
             
-        case types.RESET_STATE:
+        case types.LOGOUT:
             return INITIAL_STATE;
         default:
             return state;

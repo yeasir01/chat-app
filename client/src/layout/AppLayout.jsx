@@ -5,6 +5,7 @@ import { Outlet } from "react-router-dom";
 import SnackBar from "../components/SnackBar.jsx";
 import { useStore, types } from "../hooks/useStore.jsx";
 import io from "socket.io-client";
+import alert from "../assets/audio/sound-effect.mp3"
 
 const useStyles = () => ({
     root: {
@@ -75,11 +76,14 @@ const AppLayout = () => {
                 type: types.ADD_MESSAGE, 
                 payload: message
             })
+            
+            new Audio(alert).play();
         });
 
         return () => {
             socket.disconnect();
         };
+        
     }, [dispatch, socket]);
 
     useEffect(()=>{

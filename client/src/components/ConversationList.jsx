@@ -35,16 +35,18 @@ const ConversationList = () => {
     const user = useStore((state) => state.user);
     const dispatch = useStore((state) => state.dispatch);
     const chats = useStore((state) => state.chats);
-    //const messages = useStore((state) => state.messages);
     const activeChatId = useStore((state) => state.activeChatId);
 
     const { response, isLoading } = useFetch("/api/chats");
 
     const classes = useStyles();
     
-    useEffect(()=>{
-        if (response.ok) {
-            dispatch({type: types.SET_CHATS, payload: response.data.chats})
+    useEffect(() => {
+        if (response.ok && response.data.chats) {
+            dispatch({
+                type: types.SET_CHATS, 
+                payload: response.data.chats
+            })
         }
     },[response, dispatch])
 
@@ -61,21 +63,18 @@ const ConversationList = () => {
                     <LoaderBoundary loading={isLoading}>
                         <List disablePadding>
                             {chats.map((chat, idx) => {
-                                const isMe = chat?.messages[0]?.user?.id === user.id;
-                                const isGroup = chat.isGroup;
-                                const groupName = chat.title;
-                                const avatar = isGroup ? chat?.avatar : chat?.users[0]?.avatar;
-                                const lastMessage = chat?.messages[0]?.text;
-                                const lastMessageUser = chat?.messages[0]?.user?.firstName;
-                                const firstName = chat?.users[0]?.firstName;
-                                const lastName = chat?.users[0]?.lastName;
-                                const fullName = firstName + " " + lastName;
-                                const displayName = isGroup ? groupName : fullName;
-                                const lastMsgDisplay = `${isMe ? "me" : lastMessageUser}: ${lastMessage}`;
-                                const animationDelay = (idx + 1) * 300;
+                                const lastMessageObject = chat.messages.slice(-1)[0];
+                                const isMe = lastMessageObject?.user.id === user.id;
+                                const avatar = chat.isGroup ? chat.avatar : chat.members[0]?.avatar;
+                                const lastMessage = lastMessageObject?.text;
+                                const firstName = chat.members[0]?.firstName;
+                                const lastName = chat.members[0]?.lastName;
+                                const displayName = chat.isGroup ? chat.title : `${firstName} ${lastName}`;
+                                const lastMsgDisplay = `${isMe ? "me" : firstName}: ${lastMessage}`;
+                                const animateInDelay = (idx + 1) * 300;
                                 
                                 return (
-                                    <Fade in timeout={animationDelay} key={idx}>
+                                    <Fade in timeout={animateInDelay} key={idx}>
                                         <ListItemButton
                                             divider
                                             selected={activeChatId === chat.id}
@@ -86,7 +85,7 @@ const ConversationList = () => {
                                         >
                                             <ListItemAvatar> 
                                                 <CustomAvatar src={avatar} >
-                                                    {chat.isGroup ? chat.title : `${chat.users[0].firstName} ${chat.users[0].lastName}`}
+                                                    {chat.isGroup ? chat.title : `${firstName} ${lastName}`}
                                                 </CustomAvatar>
                                             </ListItemAvatar>
                                             <ListItemText

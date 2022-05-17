@@ -35,7 +35,8 @@ export default (sequelize, DataTypes) => {
     
     Chat.associate = ({User, Message, Participant}) => {
         Chat.belongsToMany(User, {
-            through: Participant
+            through: Participant,
+            as: "members"
         });
         
         Chat.hasMany(Message);

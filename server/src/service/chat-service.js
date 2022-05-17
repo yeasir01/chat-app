@@ -14,13 +14,14 @@ const findAllChatsByUserId = async (userId) => {
             model: db.Chat,
             attributes: ["id", "title", "avatar", "isGroup" , "createdAt"],
             through: {
-                attributes: [],
+                attributes: [], // do not return anything from participants table
             },
             include: [
                 {
                     model: db.User,
+                    as: "members",
                     where: {
-                        [Op.not]: {
+                        [Op.not]: { // do not return the requesting/logged in user
                             id: userId,
                         },
                     },
@@ -31,9 +32,9 @@ const findAllChatsByUserId = async (userId) => {
                 },
                 {
                     model: db.Message,
-                    attributes: ["text", "updatedAt", "userId"],
-                    order: [["updatedAt", "DESC"]],
-                    limit: 1,
+                    attributes: ["text", "createdAt", "userId", "chatId"],
+                    order: [["createdAt", "DESC"]],
+                    limit: 1, // Return last 25 messages
                     include: {
                         model: db.User,
                         attributes: ["id","firstName", "lastName", "handle"],

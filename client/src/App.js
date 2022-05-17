@@ -12,8 +12,11 @@ import PeopleList from "./components/PeopleList.jsx";
 import ProfileList from "./components/ProfileList.jsx";
 import RequireNoAuth from "./components/RequireNoAuth.jsx";
 import ChatLayout from "./layout/ChatLayout.jsx";
+//import useStore from "./hooks/useStore.jsx";
 
 const App = () => {
+    //const store = useStore(state => state);
+    //console.log(store)
     return (
         <>
             <ThemeProvider>

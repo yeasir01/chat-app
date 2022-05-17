@@ -58,10 +58,13 @@ const ChatFeed = () => {
     const user = useStore(state=> state.user);
     const dispatch = useStore(state=> state.dispatch);
     const activeChatId = useStore(state=> state.activeChatId);
-    const chat = useStore(state=> state.getChat());
+    const currentChatIndex = useStore(state=> state.currentChatIndex());
+    const chats = useStore(state=> state.chats);
+    
+    const chat = chats[currentChatIndex];
 
     const socket = useContext(SocketContext);
-    const { response, isLoading, fetchRequest } = useFetch();
+    //const { response, isLoading, fetchRequest } = useFetch();
 
     const keyPress = useRef({
         Shift: false,
@@ -70,7 +73,7 @@ const ChatFeed = () => {
 
     const classes = useStyles();
 
-    React.useEffect(() => {
+/*     React.useEffect(() => {
         if (response.ok) {
             dispatch({
                 type: types.SET_MESSAGES, 
@@ -83,7 +86,7 @@ const ChatFeed = () => {
         if (activeChatId !== null) {
             fetchRequest(`/api/messages?chat-id=${activeChatId}`);
         }
-    }, [activeChatId, fetchRequest]);
+    }, [activeChatId, fetchRequest]); */
 
     const sendMessage = () => {
         if (input.trim() === "") return;
@@ -91,9 +94,9 @@ const ChatFeed = () => {
         const isoDate = new Date().toISOString();
 
         const message = {
-            chatId: activeChatId,
             text: input,
             createdAt: isoDate,
+            chatId: activeChatId,
             user: user,
         };
         
@@ -133,12 +136,12 @@ const ChatFeed = () => {
             <Grid container direction="column" height={1}>
                 <Grid item sx={classes.headerGroup}>
                     <Box sx={classes.headerItem}>
-                        <CustomAvatar sx={classes.avatar} src={chat.isGroup ? chat.avatar : chat.users[0].avatar}>
-                            {chat.isGroup ? chat.title : `${chat.users[0].firstName} ${chat.users[0].lastName}`}
+                        <CustomAvatar sx={classes.avatar} src={chat.isGroup ? chat.avatar : chat.members[0].avatar}>
+                            {chat.isGroup ? chat.title : `${chat.members[0].firstName} ${chat.members[0].lastName}`}
                         </ CustomAvatar>
                         <ListItemText 
-                            primary={chat.isGroup ? chat.title : `${chat.users[0].firstName} ${chat.users[0].lastName}`} 
-                            secondary={(chat.users.length + 1) + " Members"}
+                            primary={chat.isGroup ? chat.title : `${chat.members[0].firstName} ${chat.members[0].lastName}`} 
+                            secondary={(chat.members.length + 1) + " Members"}
                         />
                     </Box>
                     <Box>
@@ -151,7 +154,7 @@ const ChatFeed = () => {
                     <Divider />
                 </Grid>
                 <Grid item xs padding={4} sx={{ overflowY: "auto" }}>
-                    <LoaderBoundary loading={isLoading}>
+                    <LoaderBoundary loading={/* isLoading */ false}>
                         <MessageBubbles/>
                     </LoaderBoundary>
                 </Grid>

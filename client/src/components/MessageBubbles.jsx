@@ -4,11 +4,14 @@ import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import useStore from "../hooks/useStore.jsx";
 import Avatar from '@mui/material/Avatar';
+import Paper from "@mui/material/Paper"
 
 const MessageBubbles = () => {
     const user = useStore(state => state.user);
-    const messages = useStore(state => state.messages);
-
+    const chats = useStore(state => state.chats);
+    const idx = useStore(state => state.currentChatIndex());
+    const messages = chats[idx].messages;
+    
     const lastMessageRef = React.useRef(null);
 
     React.useLayoutEffect(() => {
@@ -17,7 +20,7 @@ const MessageBubbles = () => {
     
     React.useEffect(() => {
         lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
-    }, [messages]);
+    }, [chats]);
 
     const styles = (isOwner) => ({
         wrapper: {
@@ -57,9 +60,9 @@ const MessageBubbles = () => {
                                 <Avatar sx={{ width: 35, height: 35, fontSize: "1rem" }} src={avatar}>
                                     {fullName}
                                 </Avatar>
-                                <Box sx={classes.bubble}>
+                                <Paper sx={classes.bubble} elevation={0}>
                                     <Typography variant="body1" sx={{whiteSpace: 'pre-line'}}>{message.text}</Typography>
-                                </Box>      
+                                </Paper>
                             </Box>
                         </Grid>
                     </Grid>

@@ -34,7 +34,7 @@ const ChatLayout = () => {
                 <ConversationList/>
             </Grid>
             <Grid item xs sx={classes.chatFeed}>
-               {activeChatId ? <ChatFeed/>: <NoChatSelected/>}
+               {!!activeChatId ? <ChatFeed/>: <NoChatSelected/>}
             </Grid>
         </>
     );

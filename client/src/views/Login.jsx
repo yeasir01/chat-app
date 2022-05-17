@@ -32,14 +32,17 @@ const Login = () => {
         }
 
         if (response.ok && response.data.user){
-            dispatch({type: types.SET_USER, payload: response.data.user})
+            dispatch({
+                type: types.SET_AUTH_USER, 
+                payload: response.data.user
+            })
         }
     }, [response, dispatch])
 
     const handleSubmit = (event) => {
         event.preventDefault();
 
-        // do validation here...
+        // do form validation here...
 
         fetchRequest("/api/auth/login", {
             method: "POST",
@@ -67,7 +70,7 @@ const Login = () => {
                 md={6}
                 lg={5}
                 component={Paper}
-                elevation={6}
+                elevation={12}
                 square
             >
                 <Box
