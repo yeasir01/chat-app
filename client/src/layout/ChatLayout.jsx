@@ -25,7 +25,7 @@ const useStyles = () => ({
 
 const ChatLayout = () => {
 
-    const activeChatId = useStore(state=> state.activeChatId);
+    const activeChat = useStore(state=> state.activeChat);
     const classes = useStyles();
 
     return (
@@ -34,7 +34,7 @@ const ChatLayout = () => {
                 <ConversationList/>
             </Grid>
             <Grid item xs sx={classes.chatFeed}>
-               {!!activeChatId ? <ChatFeed/>: <NoChatSelected/>}
+               {!!activeChat ? <ChatFeed/>: <NoChatSelected/>}
             </Grid>
         </>
     );

@@ -12,7 +12,7 @@ import useTheme from "../hooks/useTheme.jsx";
 import Divider from "@mui/material/Divider";
 import Typography from "@mui/material/Typography";
 import { Link, useLocation } from "react-router-dom";
-import { useStore, types } from "../hooks/useStore.jsx";
+import useStore from "../hooks/useStore.jsx";
 
 const useStyle = () => ({
     root: {
@@ -43,11 +43,12 @@ const useStyle = () => ({
 const SideBar = () => {
     const [changeTheme] = useTheme();
     const location = useLocation();
-    const dispatch = useStore(state => state.dispatch);
+    const logout = useStore(state => state.logout);
 
     const classes = useStyle();
 
-    const logout = async () => {
+    // Move this to global store
+    const handleSignOut = async () => {
         await fetch("/api/auth/logout", {
             method: "DELETE",
             credentials: "include",
@@ -56,7 +57,7 @@ const SideBar = () => {
             },
         });
 
-        dispatch({ type: types.LOGOUT });
+        logout();
     };
 
     return (
@@ -110,7 +111,7 @@ const SideBar = () => {
                 <ListItem sx={classes.listItem}>
                     <ListItemButton
                         sx={classes.listItemButton}
-                        onClick={logout}
+                        onClick={handleSignOut}
                     >
                         <LogoutIcon />
                     </ListItemButton>

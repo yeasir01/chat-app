@@ -1,0 +1,80 @@
+{
+    "chats": [
+        {
+            "id": 1,
+            "title": "Dream Team",
+            "avatar": "https://s.yimg.com/os/creatr-uploaded-images/2022-01/51f760a0-81f5-11ec-a7ee-f09942e600f9",
+            "isGroup": true,
+            "createdAt": "2022-05-17T04:17:09.803Z",
+            "members": [
+                {
+                    "id": 2,
+                    "firstName": "John",
+                    "lastName": "Hunt",
+                    "avatar": null,
+                    "isOnline": false,
+                    "handle": "john01"
+                },
+                {
+                    "id": 3,
+                    "firstName": "Jose",
+                    "lastName": "Martinez",
+                    "avatar": null,
+                    "isOnline": false,
+                    "handle": "jose01"
+                },
+                {
+                    "id": 4,
+                    "firstName": "Samantha",
+                    "lastName": "Jenkins",
+                    "avatar": null,
+                    "isOnline": false,
+                    "handle": "samantha01"
+                }
+            ],
+            "messages": [
+                {
+                    "text": "Hello Team",
+                    "updatedAt": "2022-05-17T04:17:09.937Z",
+                    "userId": 1,
+                    "user": {
+                        "id": 1,
+                        "firstName": "Mike",
+                        "lastName": "Kleen",
+                        "handle": "mike01"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "title": "",
+            "avatar": null,
+            "isGroup": false,
+            "createdAt": "2022-05-17T04:17:09.803Z",
+            "members": [
+                {
+                    "id": 2,
+                    "firstName": "John",
+                    "lastName": "Hunt",
+                    "avatar": null,
+                    "isOnline": false,
+                    "handle": "john01"
+                }
+            ],
+            "messages": [
+                {
+                    "text": "Hi John 😀",
+                    "updatedAt": "2022-05-17T04:17:09.938Z",
+                    "userId": 1,
+                    "user": {
+                        "id": 1,
+                        "firstName": "Mike",
+                        "lastName": "Kleen",
+                        "handle": "mike01"
+                    }
+                }
+            ]
+        }
+    ]
+}

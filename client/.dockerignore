@@ -3,3 +3,4 @@
 dockerfile
 node_modules
 *.md
+mock

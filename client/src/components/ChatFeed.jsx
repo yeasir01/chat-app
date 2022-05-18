@@ -1,4 +1,4 @@
-import React, { useRef, useContext } from "react";
+import React, { useRef } from "react";
 import Box from "@mui/system/Box";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
@@ -12,9 +12,9 @@ import MessageBubbles from "./MessageBubbles.jsx";
 import ListItemText from "@mui/material/ListItemText";
 import EmojiComponent from "./EmojiComponent.jsx";
 import LoaderBoundary from "./LoaderBoundary.jsx";
-import { useStore, types } from "../hooks/useStore.jsx";
+import useStore from "../hooks/useStore.jsx";
+import useSocket from "../hooks/useSocket.jsx";
 import useFetch from "../hooks/useFetch.jsx";
-import { SocketContext } from "../layout/AppLayout.jsx"
 import CustomAvatar from "../components/CustomAvatar.jsx";
 
 const useStyles = () => ({
@@ -55,16 +55,17 @@ const useStyles = () => ({
 const ChatFeed = () => {
     const [input, setInput] = React.useState("");
 
-    const user = useStore(state=> state.user);
-    const dispatch = useStore(state=> state.dispatch);
-    const activeChatId = useStore(state=> state.activeChatId);
-    const currentChatIndex = useStore(state=> state.currentChatIndex());
-    const chats = useStore(state=> state.chats);
-    
-    const chat = chats[currentChatIndex];
+    const socket = useSocket(state => state.socket);
 
-    const socket = useContext(SocketContext);
-    //const { response, isLoading, fetchRequest } = useFetch();
+    const user = useStore(state=> state.user);
+    const addMessage = useStore(state=> state.addMessage);
+    const setMessages = useStore(state=> state.setMessages);
+    const activeChat = useStore(state=> state.activeChat);
+    const chats = useStore(state=> state.chats);
+
+    const chat = chats.find(chat => chat.id === activeChat);
+
+    const { response, isLoading, fetchRequest } = useFetch();
 
     const keyPress = useRef({
         Shift: false,
@@ -73,36 +74,32 @@ const ChatFeed = () => {
 
     const classes = useStyles();
 
-/*     React.useEffect(() => {
+    React.useEffect(() => {
         if (response.ok) {
-            dispatch({
-                type: types.SET_MESSAGES, 
-                payload: response.data
-            })
+            setMessages(response.data)
         }
-    }, [dispatch, response]);
+    }, [response, setMessages]);
 
     React.useEffect(() => {
-        if (activeChatId !== null) {
-            fetchRequest(`/api/messages?chat-id=${activeChatId}`);
+        if (activeChat !== null) {
+            fetchRequest(`/api/messages?chat-id=${activeChat}`);
         }
-    }, [activeChatId, fetchRequest]); */
+    }, [activeChat, fetchRequest]);
 
     const sendMessage = () => {
-        if (input.trim() === "") return;
+        if (input.trim() === "") { return };
 
         const isoDate = new Date().toISOString();
 
         const message = {
             text: input,
             createdAt: isoDate,
-            chatId: activeChatId,
+            chatId: activeChat,
             user: user,
         };
         
         socket.emit("message:send", message);
-
-        dispatch({type: types.ADD_MESSAGE, payload: message});
+        addMessage(message);
         setInput("");
     };
 
@@ -154,7 +151,7 @@ const ChatFeed = () => {
                     <Divider />
                 </Grid>
                 <Grid item xs padding={4} sx={{ overflowY: "auto" }}>
-                    <LoaderBoundary loading={/* isLoading */ false}>
+                    <LoaderBoundary loading={isLoading}>
                         <MessageBubbles/>
                     </LoaderBoundary>
                 </Grid>

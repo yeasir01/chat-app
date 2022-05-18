@@ -12,7 +12,7 @@ const findAllMessagesByChatId = async (chatId) => {
             model: db.User,
             attributes: ["id", "firstName", "lastName", "handle", "avatar"],
         },
-        order: [["createdAt", "DESC"]],
+        order: [["createdAt", "ASC"]],
     });
     return messages;
 };

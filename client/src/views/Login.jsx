@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -12,42 +12,53 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Copyright from "../components/Copyright.jsx";
 import CollapsibleAlert from "../components/CollapsibleAlert.jsx";
-import { loginTypes, loginReducer, INITIAL_LOGIN_STATE, } from "../reducers/login-reducer.js";
-import { useStore, types } from "../hooks/useStore.jsx";
 import { Link as RouterLink } from "react-router-dom";
 import background from "../assets/images/bg.svg";
 import useFetch from "../hooks/useFetch.jsx";
+import useStore from "../hooks/useStore.jsx";
 
 const Login = () => {
-    const [formData, formDispatch] = useReducer(loginReducer, INITIAL_LOGIN_STATE);
-    const { response, isLoading, fetchRequest } = useFetch();
-    const dispatch = useStore(state=> state.dispatch);
+    
+    const [ formData, setFormData ] = useState({
+        email: "mike@example.com",
+        password: "password",
+        remember: false,
+    })
+    const [formErrors, setFormErrors] = useState({
+        email: "",
+        password: "",
+        remember: "",
+    })
+
+    const setAuthUser = useStore(state => state.setAuthUser);
+
+    const { response, error, isLoading, fetchRequest } = useFetch();
 
     useEffect(()=>{
-        if (response.data.validationErrors) {
-            return formDispatch({
-                type: loginTypes.SET_ERRORS, 
-                payload: response.data.validationErrors
-            })
+        if (error?.data?.validationErrors) {
+            setFormErrors(state=>({...state, ...error.data.validationErrors}))
         }
+    },[error])
 
-        if (response.ok && response.data.user){
-            dispatch({
-                type: types.SET_AUTH_USER, 
-                payload: response.data.user
-            })
+    useEffect(()=>{  
+        if (response.data.user){
+            setAuthUser(response.data.user);
         }
-    }, [response, dispatch])
+    }, [response, setAuthUser])
 
     const handleSubmit = (event) => {
         event.preventDefault();
 
-        // do form validation here...
-
         fetchRequest("/api/auth/login", {
             method: "POST",
-            body: formData.values
+            body: formData
         }) 
+    };
+
+    const handleInputChange = (event) => {
+        const { name, value, type, checked } = event.target;
+        const input = type === "checkbox" ? checked : value;
+        setFormData((state) => ({ ...state, [name]: input }));
     };
 
     return (
@@ -89,7 +100,7 @@ const Login = () => {
                         Sign in
                     </Typography>
                     <CollapsibleAlert
-                        message={" *********** Server validation here *************"}
+                        message={error?.statusText}
                         severity="error"
                     />
                     <Box
@@ -107,15 +118,10 @@ const Login = () => {
                             name="email"
                             autoComplete="email"
                             autoFocus
-                            value={formData.values.email}
-                            onChange={(e) => {
-                                formDispatch({
-                                    type: loginTypes.SET_EMAIL,
-                                    payload: e.target.value,
-                                });
-                            }}
-                            helperText={formData.errors.email}
-                            error={Boolean(formData.errors.email)}
+                            value={formData.email}
+                            onChange={handleInputChange}
+                            helperText={formErrors.email}
+                            error={!!formErrors.email}
                         />
                         <TextField
                             margin="normal"
@@ -126,15 +132,10 @@ const Login = () => {
                             type="password"
                             id="password"
                             autoComplete="current-password"
-                            value={formData.values.password}
-                            onChange={(e) => {
-                                formDispatch({
-                                    type: loginTypes.SET_PASSWORD,
-                                    payload: e.target.value,
-                                });
-                            }}
-                            helperText={formData.errors.password}
-                            error={Boolean(formData.errors.password)}
+                            value={formData.password}
+                            onChange={handleInputChange}
+                            helperText={formErrors.password}
+                            error={!!formErrors.password}
                         />
                         <FormControlLabel
                             control={
@@ -142,13 +143,8 @@ const Login = () => {
                                     value="remember"
                                     color="primary"
                                     name="remember"
-                                    onChange={(e) => {
-                                        formDispatch({
-                                            type: loginTypes.SET_REMEMBER,
-                                            payload: e.target.checked,
-                                        });
-                                    }}
-                                    checked={formData.values.remember}
+                                    onChange={handleInputChange}
+                                    checked={formData.remember}
                                 />
                             }
                             label="Remember me"

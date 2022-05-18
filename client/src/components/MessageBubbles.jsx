@@ -8,9 +8,7 @@ import Paper from "@mui/material/Paper"
 
 const MessageBubbles = () => {
     const user = useStore(state => state.user);
-    const chats = useStore(state => state.chats);
-    const idx = useStore(state => state.currentChatIndex());
-    const messages = chats[idx].messages;
+    const messages = useStore(state=> state.messages);
     
     const lastMessageRef = React.useRef(null);
 
@@ -20,7 +18,7 @@ const MessageBubbles = () => {
     
     React.useEffect(() => {
         lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
-    }, [chats]);
+    }, [messages]);
 
     const styles = (isOwner) => ({
         wrapper: {

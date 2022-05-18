@@ -10,7 +10,7 @@ import SearchBar from "./SearchBar.jsx";
 import { truncate } from "../util/helpers.js";
 import Fade from "@mui/material/Fade";
 import LoaderBoundary from "./LoaderBoundary.jsx";
-import { useStore, types } from "../hooks/useStore.jsx";
+import useStore from "../hooks/useStore.jsx";
 import useFetch from "../hooks/useFetch.jsx";
 import CustomAvatar from "../components/CustomAvatar.jsx";
 
@@ -33,9 +33,10 @@ const useStyles = () => ({
 
 const ConversationList = () => {
     const user = useStore((state) => state.user);
-    const dispatch = useStore((state) => state.dispatch);
+    const setChats = useStore((state) => state.setChats);
     const chats = useStore((state) => state.chats);
-    const activeChatId = useStore((state) => state.activeChatId);
+    const activeChat = useStore((state) => state.activeChat);
+    const setActiveChat = useStore((state) => state.setActiveChat);
 
     const { response, isLoading } = useFetch("/api/chats");
 
@@ -43,12 +44,9 @@ const ConversationList = () => {
     
     useEffect(() => {
         if (response.ok && response.data.chats) {
-            dispatch({
-                type: types.SET_CHATS, 
-                payload: response.data.chats
-            })
+            setChats(response.data.chats)
         }
-    },[response, dispatch])
+    },[response, setChats])
 
     return (
         <Paper elevation={1} sx={classes.root}>
@@ -63,7 +61,7 @@ const ConversationList = () => {
                     <LoaderBoundary loading={isLoading}>
                         <List disablePadding>
                             {chats.map((chat, idx) => {
-                                const lastMessageObject = chat.messages.slice(-1)[0];
+                                const lastMessageObject = chat.messages[0];
                                 const isMe = lastMessageObject?.user.id === user.id;
                                 const avatar = chat.isGroup ? chat.avatar : chat.members[0]?.avatar;
                                 const lastMessage = lastMessageObject?.text;
@@ -77,11 +75,8 @@ const ConversationList = () => {
                                     <Fade in timeout={animateInDelay} key={idx}>
                                         <ListItemButton
                                             divider
-                                            selected={activeChatId === chat.id}
-                                            onClick={() => dispatch({
-                                                type: types.SET_ACTIVE_CHAT, 
-                                                payload: chat.id
-                                            })}
+                                            selected={activeChat === chat.id}
+                                            onClick={()=>setActiveChat(chat.id)}
                                         >
                                             <ListItemAvatar> 
                                                 <CustomAvatar src={avatar} >

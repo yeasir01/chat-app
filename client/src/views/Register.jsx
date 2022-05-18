@@ -1,7 +1,6 @@
-import React, { useReducer } from "react";
+import { useState, useEffect } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import useFetch from "../hooks/useFetch.jsx";
-import useStore from "../hooks/useStore.jsx";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -16,29 +15,55 @@ import Paper from "@mui/material/Paper";
 import Copyright from "../components/Copyright.jsx";
 import CollapsibleAlert from "../components/CollapsibleAlert.jsx";
 import background from "../assets/images/bg.svg";
-import { INITIAL_REGISTER_STATE, registerReducer, registerTypes } from "../reducers/register-reducer.js";
 
 const Register = () => {
-    const [state, dispatch] = useReducer( registerReducer, INITIAL_REGISTER_STATE );
-    const { response, error, isLoading, request } = useFetch();
-    
+    const [formData, setFormData] = useState({
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: "",
+        passwordRepeat: "",
+        handle: "",
+    });
+    const [formErrors, setFormErrors] = useState({
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: "",
+        passwordRepeat: "",
+        handle: "",
+    });
+
+    const { response, error, isLoading, fetchRequest } = useFetch();
+
     const navigate = useNavigate();
 
-    const serverValError = {}; //FIX the server side validation errors
+    useEffect(()=>{
+        if (error?.data?.validationErrors) {
+            setFormErrors(state=>({...state, ...error.data.validationErrors}))
+        }
+    },[error])
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        request("/api/auth/register", {
-            method: "POST",
-            body: state,
-        });
-    };
-
-    React.useEffect(() => {
+    useEffect(() => {
         if (response.ok) {
             return navigate("/login", { replace: false });
         }
     }, [navigate, response]);
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+
+        fetchRequest("/api/auth/register", {
+            method: "POST",
+            body: formData,
+        });
+    };
+
+    const handleInputChange = (event) => {
+        const { name, value, type, checked } = event.target;
+        const input = type === "checkbox" ? checked : value;
+        setFormData((state) => ({ ...state, [name]: input }));
+    };
 
     return (
         <Box
@@ -94,19 +119,12 @@ const Register = () => {
                                     fullWidth
                                     id="firstName"
                                     name="firstName"
-                                    value={state.firstName}
-                                    onChange={(e) =>
-                                        dispatch({
-                                            type: registerTypes.SET_FIRST_NAME,
-                                            payload: e.target.value,
-                                        })
-                                    }
+                                    value={formData.firstName}
+                                    onChange={handleInputChange}
                                     label="First Name"
                                     autoFocus
-                                    helperText={serverValError?.firstName}
-                                    error={
-                                        serverValError?.firstName ? true : false
-                                    }
+                                    helperText={formErrors.firstName}
+                                    error={!!formErrors.firstName}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
@@ -116,18 +134,11 @@ const Register = () => {
                                     fullWidth
                                     id="lastName"
                                     name="lastName"
-                                    value={state.lastName}
-                                    onChange={(e) =>
-                                        dispatch({
-                                            type: registerTypes.SET_LAST_NAME,
-                                            payload: e.target.value,
-                                        })
-                                    }
+                                    value={formData.lastName}
+                                    onChange={handleInputChange}
                                     label="Last Name"
-                                    helperText={serverValError?.lastName}
-                                    error={
-                                        serverValError?.lastName ? true : false
-                                    }
+                                    helperText={formErrors.lastName}
+                                    error={!!formErrors.lastName}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -138,18 +149,11 @@ const Register = () => {
                                     label="Handle"
                                     type="handle"
                                     id="handle"
-                                    value={state.handle}
-                                    onChange={(e) =>
-                                        dispatch({
-                                            type: registerTypes.SET_HANDLE,
-                                            payload: e.target.value,
-                                        })
-                                    }
+                                    value={formData.handle}
+                                    onChange={handleInputChange}
                                     autoComplete="user-name"
-                                    helperText={serverValError?.handle}
-                                    error={
-                                        serverValError?.handle ? true : false
-                                    }
+                                    helperText={formErrors.handle}
+                                    error={!!formErrors.handle}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -159,16 +163,11 @@ const Register = () => {
                                     id="email"
                                     label="Email Address"
                                     name="email"
-                                    value={state.email}
-                                    onChange={(e) =>
-                                        dispatch({
-                                            type: registerTypes.SET_EMAIL,
-                                            payload: e.target.value,
-                                        })
-                                    }
+                                    value={formData.email}
+                                    onChange={handleInputChange}
                                     autoComplete="email"
-                                    helperText={serverValError?.email}
-                                    error={serverValError?.email ? true : false}
+                                    helperText={formErrors.email}
+                                    error={!!formErrors.email}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -179,18 +178,11 @@ const Register = () => {
                                     label="Password"
                                     type="password"
                                     id="password"
-                                    value={state.password}
-                                    onChange={(e) =>
-                                        dispatch({
-                                            type: registerTypes.SET_PASSWORD,
-                                            payload: e.target.value,
-                                        })
-                                    }
+                                    value={formData.password}
+                                    onChange={handleInputChange}
                                     autoComplete="new-password"
-                                    helperText={serverValError?.password}
-                                    error={
-                                        serverValError?.password ? true : false
-                                    }
+                                    helperText={formErrors.password}
+                                    error={!!formErrors.password}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -201,20 +193,11 @@ const Register = () => {
                                     label="Confirm Password"
                                     type="password"
                                     id="passwordRepeat"
-                                    value={state.passwordRepeat}
-                                    onChange={(e) =>
-                                        dispatch({
-                                            type: registerTypes.SET_PASSWORD_REPEAT,
-                                            payload: e.target.value,
-                                        })
-                                    }
+                                    value={formData.passwordRepeat}
+                                    onChange={handleInputChange}
                                     autoComplete="new-password"
-                                    helperText={serverValError?.passwordRepeat}
-                                    error={
-                                        serverValError?.passwordRepeat
-                                            ? true
-                                            : false
-                                    }
+                                    helperText={formErrors.passwordRepeat}
+                                    error={!!formErrors.passwordRepeat}
                                 />
                             </Grid>
                             <Grid item xs={12}>

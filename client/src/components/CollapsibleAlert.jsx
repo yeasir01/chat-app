@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import Alert from '@mui/material/Alert';
 import Collapse from '@mui/material/Collapse';
 import Box from '@mui/material/Box';
