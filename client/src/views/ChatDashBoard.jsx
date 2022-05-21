@@ -37,6 +37,9 @@ const ChatDashBoard = () => {
     const addMessage = useStore((state) => state.addMessage);
     const activeChat = useStore((state) => state.activeChat);
 
+    // const state = useStore();
+    // console.log(state)
+
     const classes = useStyles();
 
     useEffect(() => {
@@ -65,6 +68,10 @@ const ChatDashBoard = () => {
         socket.on("message:receive", (message) => {
             addMessage(message);
             new Audio(alert).play();
+        });
+
+        socket.on("error:join", (message) => {
+            console.log(message);
         });
 
         return () => socket.disconnect();

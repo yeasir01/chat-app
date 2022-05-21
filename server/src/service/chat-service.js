@@ -4,7 +4,7 @@ import db from "../models/index.js";
 import { Op } from "sequelize";
 
 const findAllChatsByUserId = async (userId) => {
-    const chats = await db.User.findAll({
+    const query = await db.User.findAll({
         attributes: [],
         required: true,
         where: {
@@ -34,7 +34,7 @@ const findAllChatsByUserId = async (userId) => {
                     model: db.Message,
                     attributes: ["text", "createdAt", "userId", "chatId"],
                     order: [["createdAt", "DESC"]],
-                    limit: 1, // Return last 25 messages
+                    limit: 1,
                     include: {
                         model: db.User,
                         attributes: ["id","firstName", "lastName", "handle"],
@@ -44,7 +44,27 @@ const findAllChatsByUserId = async (userId) => {
         },
     });
     
-    return chats[0];
+    return query[0];
 };
 
-export { findAllChatsByUserId };
+const getAllChatIds = async (userId) => {
+    const query = await db.User.findAll({
+        attributes: [],
+        required: true,
+        plain: true,
+        where: {
+            id: userId,
+        },
+        include: {
+            model: db.Chat,
+            attributes: ["id"],
+            through: {
+                attributes: [], // do not return anything from participants table
+            },
+        },
+    });
+    
+    return query.chats.map(obj => obj.id);
+};
+
+export { findAllChatsByUserId, getAllChatIds };

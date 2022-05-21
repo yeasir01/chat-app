@@ -5,7 +5,7 @@ import useStore from "../hooks/useStore.jsx";
 const SnackBar = () => {
     const snackbar = useStore((state) => state.snackbar);
     const closeSnackbar = useStore(state=> state.closeSnackbar);
-
+    
     const handleClose = () => {
         closeSnackbar()
     }

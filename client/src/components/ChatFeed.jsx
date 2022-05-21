@@ -61,9 +61,8 @@ const ChatFeed = () => {
     const addMessage = useStore(state=> state.addMessage);
     const setMessages = useStore(state=> state.setMessages);
     const activeChat = useStore(state=> state.activeChat);
-    const chats = useStore(state=> state.chats);
-
-    const chat = chats.find(chat => chat.id === activeChat);
+    const isConnected = useStore(state=> state.isConnected);
+    const chat = useStore(state=> state.getCurrentChat());
 
     const { response, isLoading, fetchRequest } = useFetch();
 
@@ -87,19 +86,21 @@ const ChatFeed = () => {
     }, [activeChat, fetchRequest]);
 
     const sendMessage = () => {
-        if (input.trim() === "") { return };
+        if (input.trim() === "") return;
+        
+        if (!isConnected) return;
 
         const isoDate = new Date().toISOString();
 
-        const message = {
+        const msg = {
             text: input,
             createdAt: isoDate,
             chatId: activeChat,
             user: user,
         };
         
-        socket.emit("message:send", message);
-        addMessage(message);
+        socket.emit("message:send", msg);
+        addMessage(msg);
         setInput("");
     };
 
@@ -175,9 +176,10 @@ const ChatFeed = () => {
                                 onChange={handleInputChange}
                                 onKeyDown={handleKeyDown}
                                 onKeyUp={handleKeyUp}
+                                disabled={!isConnected}
                                 value={input}
                                 fullWidth
-                                placeholder="Type a message"
+                                placeholder="Type a message..."
                                 sx={classes.input}
                                 size="medium"
                                 multiline
@@ -186,7 +188,7 @@ const ChatFeed = () => {
                                     sx: { paddingLeft: 3 },
                                     endAdornment: (
                                         <InputAdornment position="end">
-                                            <IconButton onClick={sendMessage}>
+                                            <IconButton onClick={sendMessage} disabled={!isConnected}>
                                                 <SendOutlinedIcon color="primary" />
                                             </IconButton>
                                         </InputAdornment>

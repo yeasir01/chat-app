@@ -8,7 +8,7 @@ import Paper from "@mui/material/Paper"
 
 const MessageBubbles = () => {
     const user = useStore(state => state.user);
-    const messages = useStore(state=> state.messages);
+    const messages = useStore(state=> state.getMessages());
     
     const lastMessageRef = React.useRef(null);
 

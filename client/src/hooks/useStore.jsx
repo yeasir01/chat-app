@@ -12,7 +12,6 @@ const initialState = {
     },
     isAuthenticated: false,
     chats: [],
-    messages: [],
     notification: [],
     activeChat: null,
     isConnected: false,
@@ -24,101 +23,71 @@ const initialState = {
     },
 };
 
-const useStore = create(immer((set, get) => ({
+// immer middleware handles state immutability for us.
+const useStore = create(immer((set, get)=>({
     ...initialState,
-    setAuthUser(USER) {
-        set((state) => ({
-            ...state,
-            isAuthenticated: true,
-            user: USER,
-        }));
+    setAuthUser(user) {
+        set((state) => {state.isAuthenticated = true; state.user = user;});
     },
-    updateAuthUser(USER) {
-        set((state) => ({
-            ...state,
-            isAuthenticated: true,
-            user: { ...state.user, ...USER },
-        }));
+    updateAuthUser(user) {
+        set((state) =>  {state.user = {...state.user, ...user}});
     },
     logout() {
-        set((_state) => initialState);
+        set((state) => initialState);
     },
-    openSnackbar(CONFIG) {
-        set((state) => ({
-            ...state,
-            snackbar: {
-                ...state.snackbar,
-                isOpen: true,
-                ...CONFIG,
-            },
-        }));
+    openSnackbar(config) {
+        set((state) => {state.snackbar = {isOpen: true, ...config}});
     },
     closeSnackbar() {
-        set((state) => ({
-            ...state,
-            snackbar: {
-                ...initialState.snackbar,
-            },
-        }));
+        set((state) => {state.snackbar = initialState.snackbar});
     },
-    setIsConnected(VALUE) {
-        set((state) => ({
-            ...state,
-            isConnected: VALUE,
-        }));
+    setIsConnected(value) {
+        set((state) => {state.isConnected = value});
     },
-    setChats(CHATS) {
-        set((state) => ({
-            ...state,
-            chats: CHATS,
-        }));
+    setChats(chats) {
+        set((state) => {state.chats = chats});
     },
-    addChat(NEW_CHAT) {
-        set((state) => ({
-            ...state,
-            chats: [...state.chats, NEW_CHAT],
-        }));
+    addChat(newChat) {
+        set((state) => {state.chats.push(newChat)});
     },
-    updateChat(CHAT_OBJ) {
-        if (!CHAT_OBJ.id) return;
-
-        set((state) => ({
-            ...state,
-            chats: state.chats.map((item) =>
-                item.id === CHAT_OBJ.id ? { ...item, ...CHAT_OBJ } : item
-            ),
-        }));
-    },
-    deleteChat(CHAT_ID) {
-        if (CHAT_ID === 0) return;
-
-        set((state) => ({
-            ...state,
-            chats: state.chats.filter((cht) => cht.id !== CHAT_ID),
-        }));
-    },
-    setActiveChat(ID) {
-        set((state) => ({
-            ...state,
-            activeChat: ID,
-        }));
-    },
-    setMessages(MESSAGES) {
-        set((state) => ({
-            ...state,
-            messages: MESSAGES,
-        }));
-    },
-    addMessage(MESSAGE) {
-        if (!MESSAGE.chatId) return;
+    updateChat(chat) {
+        if (!chat.id) return;
 
         set((state) => {
-            const chatIndex = state.chats.findIndex(
-                (elm) => elm.id === MESSAGE.chatId
-            );
-                
-            
+            state.chats[chat.id] = {...state.chats[chat.id], ...chat }
+        });
     },
+    deleteChat(chatId) {
+        if (chatId === 0) return;
+
+        set((state) => {
+            state.chats = state.chats.filter((cht) => cht.id !== chatId);
+        });
+    },
+    setActiveChat(id) {
+        set((state) => {
+            state.activeChat = id;
+        });
+    },
+    setMessages(messages) {
+        const idx = get().chats.findIndex(c => c.id === get().activeChat)
+        set((state) => {state.chats[idx].messages = messages});
+    },
+    addMessage(message) {
+          const idx = get().chats.findIndex(chat => chat.id === message.chatId);
+          
+          if (idx === -1) return;
+
+          set((state)=>{
+              state.chats[idx].messages.push(message);
+          })
+    },
+    getMessages(){
+        return get().chats.find(chat => chat.id === get().activeChat).messages;
+    },
+    getCurrentChat(){
+        return get().chats.find(c => c.id === get().activeChat)
+    }
 })));
 
 export default useStore;

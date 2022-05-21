@@ -1,31 +1,31 @@
 "use strict";
 
 import { saveMessageToDB } from "../service/message-service.js";
+import { getAllChatIds } from "../service/chat-service.js";
 
-export const socketEventHandler = (io) => (
+export const socketEventHandler = (io) =>
     io.on("connection", (socket) => {
         socket.username = socket.request.user.handle;
-        console.log("user has connected");
-        
-        socket.on("chat:join", (chatId) => {
-            console.log("a user joined a room");
-            socket.room = chatId;
-            socket.join(chatId);
-        });
 
-        socket.on("chat:leave", (cb) => {
-            console.log("a user left a room");
-            socket.leave(socket.room);
-            cb();
+        getAllChatIds(socket.request.user.id)
+            .then((groups) => {
+                socket.join(groups);
+            })
+            .catch((err) => {
+                socket.emit("error:join", "Unable to join groups");
+                console.log(err);
+            });
+
+        socket.on("chat:join", (chatId) => {
+            socket.room = chatId;
         });
 
         socket.on("message:send", (message) => {
-            console.log("a user sent a message", message);
             saveMessageToDB(message)
-                .then( record => {
+                .then((record) => {
                     socket.to(socket.room).emit("message:receive", { ...message, id: record.id });
                 })
-                .catch( err => {
+                .catch((err) => {
                     console.log(err);
                 });
         });
@@ -33,8 +33,7 @@ export const socketEventHandler = (io) => (
         socket.on("disconnect", () => {
             console.log("a user disconnected");
         });
-    })
-);
+    });
 
 export const wrap = (middleware) => {
     return (socket, next) => {
