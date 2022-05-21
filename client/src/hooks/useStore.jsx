@@ -1,4 +1,5 @@
 import create from "zustand";
+import { immer } from "zustand/middleware/immer";
 
 const initialState = {
     user: {
@@ -23,7 +24,7 @@ const initialState = {
     },
 };
 
-const useStore = create((set, get) => ({
+const useStore = create(immer((set, get) => ({
     ...initialState,
     setAuthUser(USER) {
         set((state) => ({
@@ -116,20 +117,8 @@ const useStore = create((set, get) => ({
                 (elm) => elm.id === MESSAGE.chatId
             );
                 
-            if (state.activeChat === MESSAGE.chatId) {
-                return {
-                    ...state,
-                    messages: [...state.messages, MESSAGE],
-                    //chats: ([...state.chats][chatIndex].messages = [MESSAGE])
-                };
-            } else {
-                return {
-                    ...state,
-                    //chats: ([...state.chats][chatIndex].messages = [MESSAGE]),
-                };
-            }
-        });
+            
     },
-}));
+})));
 
 export default useStore;

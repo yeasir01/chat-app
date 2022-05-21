@@ -61,7 +61,7 @@ const ConversationList = () => {
                     <LoaderBoundary loading={isLoading}>
                         <List disablePadding>
                             {chats.map((chat, idx) => {
-                                const lastMessageObject = chat.messages[0];
+                                const lastMessageObject = chat.messages.at(-1);
                                 const isMe = lastMessageObject?.user.id === user.id;
                                 const avatar = chat.isGroup ? chat.avatar : chat.members[0]?.avatar;
                                 const lastMessage = lastMessageObject?.text;
