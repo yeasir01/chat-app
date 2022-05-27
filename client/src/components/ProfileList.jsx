@@ -3,8 +3,8 @@ import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
-import SearchBar from "./SearchBar.jsx";
-import LoaderBoundary from "./LoaderBoundary.jsx";
+import SearchBar from "./common/SearchBar";
+import LoaderBoundary from "./utility/LoaderBoundary.jsx";
 
 const useStyles = () => ({
     root: {

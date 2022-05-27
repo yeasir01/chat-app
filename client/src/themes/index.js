@@ -1,9 +1,7 @@
-import light from "./LightTheme.jsx";
-import dark from "./DarkTheme.jsx";
+import light from "./light.js";
+import dark from "./dark.js";
 
-const list = {
+export {
     light,
     dark
-}
-
-export default list;
+};

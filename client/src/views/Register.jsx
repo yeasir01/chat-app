@@ -12,8 +12,8 @@ import Box from "@mui/material/Box";
 import HowToRegOutlinedIcon from "@mui/icons-material/HowToRegOutlined";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
-import Copyright from "../components/Copyright.jsx";
-import CollapsibleAlert from "../components/CollapsibleAlert.jsx";
+import Copyright from "../components/common/Copyright.jsx";
+import CollapsibleAlert from "../components/common/CollapsibleAlert.jsx";
 import background from "../assets/images/bg.svg";
 
 const Register = () => {

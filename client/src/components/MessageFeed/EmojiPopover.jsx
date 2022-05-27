@@ -3,11 +3,15 @@ import IconButton from "@mui/material/IconButton";
 import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
 import Popover from '@mui/material/Popover';
 import Box from '@mui/material/Box';
-import emojis from "../assets/emojis.js";
+import emojis from "../../assets/emojis.js";
 
 const useStyles = () => ({
-    popover: {
+    root: {
         overflow: "hidden",
+        "& .MuiPopover-paper": {
+            borderRadius: 3,
+            padding: 1
+        },
     },
     wrapper: {
         width: 200,
@@ -23,7 +27,7 @@ const useStyles = () => ({
     }
 });
 
-const EmojiButton = (props) => {
+const EmojiPopover = (props) => {
     const [anchor, setAnchor] = React.useState(null);
 
     const classes = useStyles();
@@ -57,7 +61,7 @@ const EmojiButton = (props) => {
                     vertical: 'bottom',
                     horizontal: 'left',
                 }}
-                sx={classes.popover}
+                sx={classes.root}
             >
                 <Box sx={classes.wrapper}>
                     {emojis.map(( emoji, idx )=>(
@@ -71,4 +75,4 @@ const EmojiButton = (props) => {
     );
 };
 
-export default React.memo(EmojiButton);
+export default React.memo(EmojiPopover);

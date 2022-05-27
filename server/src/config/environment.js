@@ -8,6 +8,6 @@ export default {
         password: process.env.POSTGRES_PASSWORD ,
         port: process.env.POSTGRES_PORT,
         dialect: "postgres",
-        logging: false
+        logging: false,
     }
 };

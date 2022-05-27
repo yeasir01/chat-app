@@ -10,7 +10,7 @@ const useStyles = () => ({
         alignItems: "center",
         flexDirection: "column",
         height: 1,
-        width: 1
+        width: 1,
     },
     icon: {
         height: "100px",
@@ -28,7 +28,7 @@ const NoChatSelected = () => {
     const classes = useStyles();
 
     return (
-        <Paper elevation={1} sx={{height: 1}}>
+        <Paper elevation={1} sx={{height: 1, boxShadow: "none"}}>
             <Grid container sx={classes.container}>
                 <Grid item>
                     <ChatOutlinedIcon sx={classes.icon}/>

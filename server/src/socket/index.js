@@ -6,7 +6,7 @@ import { getAllChatIds } from "../service/chat-service.js";
 export const socketEventHandler = (io) =>
     io.on("connection", (socket) => {
         socket.username = socket.request.user.handle;
-
+        console.log(socket.username, "has connected");
         getAllChatIds(socket.request.user.id)
             .then((groups) => {
                 socket.join(groups);
@@ -18,6 +18,7 @@ export const socketEventHandler = (io) =>
 
         socket.on("chat:join", (chatId) => {
             socket.room = chatId;
+            console.log("Joined Rooms", socket.rooms);
         });
 
         socket.on("message:send", (message) => {

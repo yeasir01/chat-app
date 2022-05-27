@@ -65,9 +65,7 @@ const useStore = create(immer((set, get)=>({
         });
     },
     setActiveChat(id) {
-        set((state) => {
-            state.activeChat = id;
-        });
+        set((state) => { state.activeChat = id; });
     },
     setMessages(messages) {
         const idx = get().chats.findIndex(c => c.id === get().activeChat)

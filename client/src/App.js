@@ -3,22 +3,24 @@ import Login from "./views/Login.jsx";
 import Register from "./views/Register.jsx";
 import NoMatch from "./views/NotFound.jsx";
 import HomePage from "./views/Home.jsx";
-import RequireAuth from "./components/RequireAuth.jsx";
 import CssBaseline from "@mui/material/CssBaseline";
-import ThemeProvider from "./context/ThemeProvider.jsx";
+import { ThemeProvider } from "@mui/material/styles";
 import { Routes, Route } from "react-router-dom";
 import PeopleList from "./components/PeopleList.jsx";
 import ProfileList from "./components/ProfileList.jsx";
-import RequireNoAuth from "./components/RequireNoAuth.jsx";
+import RequireAuth from "./components/utility/RequireAuth.jsx";
+import RequireNoAuth from "./components/utility/RequireNoAuth.jsx";
 import ChatLayout from "./layout/ChatLayout.jsx";
-import ChatDashBoard from "./views/ChatDashBoard.jsx";
+import Dashboard from "./views/Dashboard.jsx";
+import useTheme from "./hooks/useTheme.jsx"
 
 const App = () => {
+    const theme = useTheme(state=>state.getTheme());
+
     return (
         <>
-            <ThemeProvider>
+            <ThemeProvider theme={theme}>
                     <CssBaseline />
-                
                     <Routes>
                         <Route path="/" exact element={<HomePage />} />
                         <Route element={<RequireNoAuth />}>
@@ -26,7 +28,7 @@ const App = () => {
                             <Route path="/register" exact element={<Register />} />
                         </Route>
                         <Route element={<RequireAuth />}>
-                            <Route element={<ChatDashBoard />}>
+                            <Route element={<Dashboard />}>
                                 <Route path="/chats" element={<ChatLayout />} />
                                 <Route path="/people" element={<PeopleList />} />
                                 <Route path="/profile" element={<ProfileList />} />

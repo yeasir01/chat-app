@@ -8,11 +8,11 @@ import ManageAccountsOutlinedIcon from "@mui/icons-material/ManageAccountsOutlin
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 import SettingsBrightnessOutlinedIcon from "@mui/icons-material/SettingsBrightnessOutlined";
 import LogoutIcon from "@mui/icons-material/Logout";
-import useTheme from "../hooks/useTheme.jsx";
 import Divider from "@mui/material/Divider";
 import Typography from "@mui/material/Typography";
 import { Link, useLocation } from "react-router-dom";
-import useStore from "../hooks/useStore.jsx";
+import useTheme from "../../hooks/useTheme.jsx";
+import useStore from "../../hooks/useStore.jsx";
 
 const useStyle = () => ({
     root: {
@@ -21,6 +21,7 @@ const useStyle = () => ({
         flexDirection: "column",
         justifyContent: "space-between",
         borderRadius: 2,
+        boxShadow: "none"
     },
     listItem: {
         display: "flex",
@@ -41,7 +42,9 @@ const useStyle = () => ({
 });
 
 const SideBar = () => {
-    const [changeTheme] = useTheme();
+    const theme = useTheme(state=> state.mode);
+    const setTheme = useTheme(state=> state.setTheme);
+
     const location = useLocation();
     const logout = useStore(state => state.logout);
 
@@ -59,6 +62,10 @@ const SideBar = () => {
 
         logout();
     };
+
+    const changeTheme = () => {
+        theme === "light" ? setTheme("dark") : setTheme("light")
+    }
 
     return (
         <Paper elevation={1} sx={classes.root}>

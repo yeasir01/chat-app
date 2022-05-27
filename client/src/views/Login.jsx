@@ -10,9 +10,9 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
-import Copyright from "../components/Copyright.jsx";
-import CollapsibleAlert from "../components/CollapsibleAlert.jsx";
-import { Link as RouterLink } from "react-router-dom";
+import Copyright from "../components/common/Copyright.jsx";
+import CollapsibleAlert from "../components/common/CollapsibleAlert.jsx";
+import { Link as RouterLink, useNavigate, useLocation } from "react-router-dom";
 import background from "../assets/images/bg.svg";
 import useFetch from "../hooks/useFetch.jsx";
 import useStore from "../hooks/useStore.jsx";
@@ -31,6 +31,10 @@ const Login = () => {
     })
 
     const setAuthUser = useStore(state => state.setAuthUser);
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    let from = location.state?.from?.pathname || "/";
 
     const { response, error, isLoading, fetchRequest } = useFetch();
 
@@ -43,8 +47,9 @@ const Login = () => {
     useEffect(()=>{  
         if (response.data.user){
             setAuthUser(response.data.user);
+            navigate(from, {replace: true})
         }
-    }, [response, setAuthUser])
+    }, [response, setAuthUser, navigate, from])
 
     const handleSubmit = (event) => {
         event.preventDefault();

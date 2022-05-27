@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -6,23 +6,21 @@ import InputAdornment from "@mui/material/InputAdornment";
 const useStyles = () => ({
     textField: {
         width: 1,
-        [`& fieldset`]: {
-            borderRadius: 10,
-        },
     },
 });
 
-const SearchBar = ({ placeHolder, value, handleChange }) => {
+const CommonSearchField = ({sx, placeHolder, ...rest}) => {
+
     const classes = useStyles();
 
     return (
         <>
             <TextField
                 size="small"
-                sx={classes.textField}
+                variant="outlined"
+                sx={{...classes.textField, ...sx}}
                 placeholder={placeHolder || "search..."}
-                value={value}
-                onChange={handleChange}
+                {...rest}
                 InputProps={{
                     startAdornment: (
                         <InputAdornment position="start">
@@ -35,4 +33,4 @@ const SearchBar = ({ placeHolder, value, handleChange }) => {
     );
 };
 
-export default SearchBar;
+export default CommonSearchField;

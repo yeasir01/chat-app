@@ -1,6 +1,6 @@
 import React from "react";
 import { Snackbar, Alert } from "@mui/material";
-import useStore from "../hooks/useStore.jsx";
+import useStore from "../../hooks/useStore.jsx";
 
 const SnackBar = () => {
     const snackbar = useStore((state) => state.snackbar);

@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from "react-router-dom";
-import useStore from "../hooks/useStore.jsx";
+import useStore from "../../hooks/useStore.jsx";
 
 const RequireNoAuth = () => {
     const isAuthenticated = useStore(state => state.isAuthenticated);

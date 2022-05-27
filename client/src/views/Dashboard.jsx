@@ -3,9 +3,9 @@ import useSocket from "../hooks/useSocket.jsx";
 import useStore from "../hooks/useStore.jsx";
 import io from "socket.io-client";
 import alert from "../assets/audio/sound-effect.mp3";
-import SnackBar from "../components/SnackBar.jsx";
+import SnackBar from "../components/common/SnackBar.jsx";
 import { Outlet } from "react-router-dom";
-import SideBar from "../components/SideBar.jsx";
+import SideBar from "../components/SideBar";
 import Grid from "@mui/material/Grid";
 
 const useStyles = () => ({
@@ -37,18 +37,20 @@ const ChatDashBoard = () => {
     const addMessage = useStore((state) => state.addMessage);
     const activeChat = useStore((state) => state.activeChat);
 
-    // const state = useStore();
-    // console.log(state)
-
     const classes = useStyles();
 
     useEffect(() => {
         if (!socket) {
-            return initSocket(io("/"));
+            return initSocket(io("/", { reconnection: true }));
+        }
+
+        if (!socket.connected){
+            socket.connect()
         }
         
         socket.on("connect", () => {
             setIsConnected(true);
+
             openSnackbar({
                 message: "Ready to chatter!",
                 duration: 3000,
@@ -58,7 +60,7 @@ const ChatDashBoard = () => {
 
         socket.on("disconnect", () => {
             setIsConnected(false);
-
+            
             openSnackbar({
                 message: "Socket Error: Disconnected",
                 severity: "error",
@@ -83,16 +85,16 @@ const ChatDashBoard = () => {
         socket.emit("chat:join", activeChat)
     },[activeChat, socket])
 
-    return (
-        <Grid container sx={classes.root}>
-            <Grid item>
-                <SnackBar />
+    return (    
+            <Grid container sx={classes.root}>
+                <Grid item>
+                    <SnackBar />
+                </Grid>
+                <Grid item>
+                    <SideBar />
+                </Grid>
+                <Outlet />
             </Grid>
-            <Grid item>
-                <SideBar />
-            </Grid>
-            <Outlet />
-        </Grid>
     );
 };
 

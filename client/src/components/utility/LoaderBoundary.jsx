@@ -9,6 +9,8 @@ const useStyles = () => ({
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
+      flexDirection: "column",
+      gap: 2,
       width: 1,
       height: 1,
   },
@@ -33,24 +35,22 @@ const useStyles = () => ({
   }
 })
 
-const Loader = ({loading, children}) => {
+const Loader = ({loading, children, message}) => {
   
   const classes = useStyles();
 
   if (loading) {
     return (
       <Box sx={classes.root}>
-          <Box>
-            <Box sx={classes.wrapper}>
-              <CircularProgress size={80} thickness={1} disableShrink/>
-              <Box sx={classes.iconWrapper}>
-                  <SendOutlinedIcon color="primary" sx={classes.icon} value={100}/>
-              </Box>
+          <Box sx={classes.wrapper}>
+            <CircularProgress size={80} thickness={1} disableShrink/>
+            <Box sx={classes.iconWrapper}>
+                <SendOutlinedIcon color="primary" sx={classes.icon} value={100}/>
             </Box>
-            <Typography align="center" variant="subtitle1" color="text.secondary">
-              Loading...
-            </Typography>
           </Box>
+          <Typography align="center" variant="subtitle1" color="text.secondary">
+            {!!message ? message :"Loading..."}
+          </Typography>
       </Box>
     )
   }

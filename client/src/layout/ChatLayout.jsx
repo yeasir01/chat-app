@@ -1,9 +1,9 @@
 import React from "react";
-import ConversationList from "../components/ConversationList.jsx";
-import ChatFeed from "../components/ChatFeed.jsx";
-import NoChatSelected from "../components/NoChatSelected.jsx";
+import ChatFeed from "../components/ChatFeed";
+import NoChatSelected from "../components/utility/NoChatSelected.jsx";
 import useStore from "../hooks/useStore.jsx";
 import Grid from "@mui/material/Grid";
+import MessageFeed from "../components/MessageFeed";
 
 const useStyles = () => ({
     root: {
@@ -31,10 +31,10 @@ const ChatLayout = () => {
     return (
         <>
             <Grid item sx={classes.chatList}>
-                <ConversationList/>
+                <ChatFeed/>
             </Grid>
             <Grid item xs sx={classes.chatFeed}>
-               {!!activeChat ? <ChatFeed/>: <NoChatSelected/>}
+               {!!activeChat ? <MessageFeed/>: <NoChatSelected/>}
             </Grid>
         </>
     );
