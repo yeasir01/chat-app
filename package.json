@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "react": "cd client && npm start",
-    "server": "nodemon ./server/src/app.js",
+    "server": "nodemon --ignore ./client/* ./server/src/app.js",
     "seed": "node ./server/seeder/seed.js"
   },
   "repository": {

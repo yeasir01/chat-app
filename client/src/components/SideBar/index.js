@@ -52,15 +52,20 @@ const SideBar = () => {
 
     // Move this to global store
     const handleSignOut = async () => {
-        await fetch("/api/auth/logout", {
-            method: "DELETE",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
-
-        logout();
+        try {
+            await fetch("/api/auth/logout", {
+                method: "DELETE",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+        } catch (error) {
+            console.error(error)
+        } finally {
+            logout();
+        }
+        
     };
 
     const changeTheme = () => {

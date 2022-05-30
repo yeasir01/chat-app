@@ -10,12 +10,9 @@ import Grid from "@mui/material/Grid";
 
 const useStyles = () => ({
     root: {
-        height: "100vh",
-        padding: 2,
+        minHeight: "100vh",
+        padding: 1.5,
         gap: 2,
-    },
-    side: {
-        background: "primary.main",
     },
     chatList: {
         minWidth: 350,
@@ -36,6 +33,7 @@ const ChatDashBoard = () => {
     const setIsConnected = useStore((state) => state.setIsConnected);
     const addMessage = useStore((state) => state.addMessage);
     const activeChat = useStore((state) => state.activeChat);
+    const updateMemberStatus = useStore(state=> state.updateMemberStatus);
 
     const classes = useStyles();
 
@@ -72,13 +70,24 @@ const ChatDashBoard = () => {
             new Audio(alert).play();
         });
 
-        socket.on("error:join", (message) => {
-            console.log(message);
+        socket.on("error:server", (message) => {
+            console.error("Server Error:", message);
         });
 
-        return () => socket.disconnect();
+        socket.on("user:connect", ({chatId, userId})=> {
+            updateMemberStatus(chatId, userId, true)
+        })
 
-    }, [addMessage, initSocket, openSnackbar, setIsConnected, socket]);
+        socket.on("user:disconnect", ({chatId, userId})=> {
+            updateMemberStatus(chatId, userId, false)
+        })
+
+        return () => {
+            socket.removeAllListeners()
+            socket.disconnect()
+        };
+
+    }, [addMessage, initSocket, openSnackbar, setIsConnected, socket, updateMemberStatus]);
 
     useEffect(()=>{
         if (!socket || !activeChat) return;

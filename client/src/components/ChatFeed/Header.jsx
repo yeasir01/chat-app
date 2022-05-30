@@ -1,6 +1,6 @@
 import React from "react";
 import Box from "@mui/material/Box";
-import Avatar from "@mui/material/Avatar";
+import CommonAvatar from "../common/CommonAvatar.jsx";
 import useStore from "../../hooks/useStore.jsx";
 import Typography from "@mui/material/Typography";
 import ConnectionBadge from "./ConnectionBadge.jsx";
@@ -21,8 +21,7 @@ const useStyles = () => ({
         gap: 1,
     },
     avatar: {
-        width: 30,
-        height: 30,
+       fontSize: ".8rem"
     },
     text: {
         fontSize: 24,
@@ -42,7 +41,11 @@ const ConversationFeedHeader = () => {
         <Box sx={classes.root}>
             <Box sx={classes.item}>
                 <ConnectionBadge>
-                    <Avatar src={user.avatar} sx={classes.avatar} />
+                    <CommonAvatar 
+                        src={user.avatar} 
+                        size={30} sx={classes.avatar} 
+                        text={user.firstName + " " + user.lastName} 
+                    />
                 </ConnectionBadge>
             </Box>
                 <Typography variant="h1" sx={classes.text}>

@@ -9,22 +9,27 @@ const useStyle = (size)=> ({
     }
 });
 
+const getInitials = (text) => {
+    try {
+        if (text === "me") { return text };
+        const firstLetter = text.split(" ")[0][0] || "";
+        const secondLetter = text.split(" ")[1][0] || "";
+
+        return firstLetter.concat(secondLetter).toUpperCase();
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 const CommonAvatar = ({children, size , sx, text, ...rest}) => {
     
     const classes = useStyle(size);
-
-    const getInitials = (input) => {
-        if (!input) { return "" };
-        if (input === "me") {return "me"}
-        const fullName = input.split(" ");
-        const initials = fullName[0][0] + fullName[1][0];
-        return initials.toUpperCase();
-    };
+    const initials = getInitials(text)
 
     return (
         <>
             <Avatar sx={{...classes.root, ...sx}} {...rest}>
-                {getInitials(text)}
+                {initials}
             </Avatar>
         </>
     );

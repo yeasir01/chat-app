@@ -49,15 +49,15 @@ const Main = () => {
     return (
         <Paper elevation={1} sx={classes.root}>
             <Grid container direction="column" height={1}>
-                <LoaderBoundary loading={isLoading} message="...Loading Messages">
+                <LoaderBoundary loading={isLoading} message="...loading messages">
                     <Grid item sx={classes.headerGroup}>
                         <Header />
                     </Grid>
                     <Grid item>
                         <Divider />
                     </Grid>
-                    <Grid item xs padding={4} sx={{ overflowY: "auto" }}>
-                        <Messages messages={chat.messages} />
+                    <Grid item xs padding={5} sx={{ overflowY: "auto" }}>
+                        <Messages />
                     </Grid>
                     <Grid item>
                         <Divider />

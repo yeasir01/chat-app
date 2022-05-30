@@ -13,13 +13,14 @@ import RequireNoAuth from "./components/utility/RequireNoAuth.jsx";
 import ChatLayout from "./layout/ChatLayout.jsx";
 import Dashboard from "./views/Dashboard.jsx";
 import useTheme from "./hooks/useTheme.jsx"
+import theme from "./themes/index.js";
 
 const App = () => {
-    const theme = useTheme(state=>state.getTheme());
+    const mode = useTheme(state=> state.mode);
 
     return (
         <>
-            <ThemeProvider theme={theme}>
+            <ThemeProvider theme={theme[mode]}>
                     <CssBaseline />
                     <Routes>
                         <Route path="/" exact element={<HomePage />} />

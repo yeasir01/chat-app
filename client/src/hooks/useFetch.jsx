@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 
 const defaultConfig = {
     method: "GET",
+    credentials: "include",
     headers: {
         "Content-Type": "application/json; charset=UTF-8",
     },

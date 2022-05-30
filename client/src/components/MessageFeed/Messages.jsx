@@ -8,7 +8,7 @@ import CommonAvatar from "../common/CommonAvatar.jsx";
 
 const Messages = () => {
     const user = useStore(state => state.user);
-    const messages = useStore(state => state.getMessages());
+    const messages = useStore(state => state.messages);
     const lastMessageRef = React.useRef(null);
 
     React.useLayoutEffect(() => {
